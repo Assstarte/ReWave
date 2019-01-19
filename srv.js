@@ -6,7 +6,6 @@ const express = require("express");
 const srv = express();
 
 const bodyParser = require("body-parser");
-//const cors = require("cors");
 const cookieSession = require("cookie-session");
 
 srv.set("trust proxy", 1); // trust first proxy
@@ -18,9 +17,62 @@ srv.use(
   })
 );
 
-//srv.use(express.static("public"));
 srv.use(bodyParser.json());
-//srv.use(cors());
+
+//===============
+//GraphQL
+//===============
+const express_graphql = require("express-graphql");
+const { buildSchema } = require("graphql");
+
+var schema = buildSchema(`
+    type Query {
+        exec_login(login: String!, password: String!): User
+    }
+
+    type User{
+      user_id: Int!,
+      user_login: String!,
+      user_password: String!,
+      user_email: String!,
+      user_first_name: String!,
+      user_last_name: String!,
+      user_login_successfull: Boolean!
+    }
+`);
+
+//========Resolvers========
+async function exec_login({ login, password }) {
+  let checkQuery = await User.findOne({
+    where: {
+      login,
+      password
+    }
+  });
+
+  if (checkQuery) {
+    checkQuery = JSON.parse(JSON.stringify(checkQuery));
+    delete checkQuery.password;
+    let resultUser = JSON.stringify(checkQuery);
+    return {user_login_successfull: true};
+  } else return {user_login_successfull: false};
+}
+//=========================
+
+let rootGraph = {
+  exec_login
+};
+
+srv.use(
+  "/api",
+  express_graphql({
+    schema,
+    rootValue: rootGraph,
+    graphiql: true
+  })
+);
+
+//=========================
 
 //==================
 //MYSQL
@@ -45,10 +97,22 @@ const sequelize = new Sequelize(
       max: 5,
       min: 0,
       acquire: 30000,
-      idle: 10000
+      idle: 10000,
+      logging: true
     }
   }
 );
+
+//==============ENTITIES=============
+const User = sequelize.define("users", {
+  login: Sequelize.STRING,
+  password: Sequelize.STRING,
+  email: Sequelize.STRING,
+  first_name: Sequelize.STRING,
+  last_name: Sequelize.STRING,
+  account_type: Sequelize.STRING
+});
+//===================================
 
 sequelize.sync();
 
