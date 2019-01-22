@@ -1,3 +1,7 @@
 .bg-blurred-1 {
   background-image: url("../assets/bg-blur-1.jpg");
 }
+
+body {
+  overflow: hidden;
+}

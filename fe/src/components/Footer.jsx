@@ -5,7 +5,7 @@ const Footer = props => (
     style={{
       backgroundImage: `url("https://media.giphy.com/media/9JxkPTP3alOykb8PmQ/giphy.gif")`
     }}
-    className="tc-l bg-center cover bg-black mt5 h-25"
+    className="tc-l bg-center cover bg-black mt4 h-25"
   >
     <div className="w-100 ph3 pv5 bg-black-80">
       <a

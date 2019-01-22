@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import Footer from "./Footer";
+import Header from "./Header";
 
-class Home extends Component {
+class SignIn extends Component {
   render() {
     return (
       <div className="bg-blurred-1 cover">
+        <Header />
         <main className="pa4 black-80">
           <form className="measure center">
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
@@ -59,4 +61,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default SignIn;

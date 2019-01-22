@@ -14,7 +14,8 @@ import store from "./rdx/store";
 //  Components
 //==============
 
-import Home from "./components/Home";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
 
 class App extends Component {
   render() {
@@ -24,8 +25,9 @@ class App extends Component {
           <Router history={createHistory()}>
             <div>
               <Switch>
-                <Route path="/" component={Home} exact />
-                <Route path="/home" component={Home} />
+                <Route path="/" component={SignIn} exact />
+                <Route path="/home" component={SignIn} />
+                <Route path="/register" component={SignUp} />
               </Switch>
             </div>
           </Router>
