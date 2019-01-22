@@ -12,14 +12,14 @@ class SignIn extends Component {
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f4 fw6 ph0 mh0">Sign In</legend>
               <div className="mt3">
-                <label className="db fw6 lh-copy f6" for="email-address">
-                  Email
+                <label className="db fw6 lh-copy f6" for="login">
+                  Login
                 </label>
                 <input
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
-                  type="email"
-                  name="email-address"
-                  id="email-address"
+                  type="text"
+                  name="login"
+                  id="login"
                 />
               </div>
               <div className="mv3">
