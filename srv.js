@@ -2,6 +2,7 @@
 //Crucial Imports
 //==================
 require("dotenv").config();
+const NodeID3 = require("node-id3");
 const express = require("express");
 const srv = express();
 
@@ -54,8 +55,8 @@ async function exec_login({ login, password }) {
     checkQuery = JSON.parse(JSON.stringify(checkQuery));
     delete checkQuery.password;
     let resultUser = JSON.stringify(checkQuery);
-    return {user_login_successfull: true};
-  } else return {user_login_successfull: false};
+    return { user_login_successfull: true };
+  } else return { user_login_successfull: false };
 }
 //=========================
 
@@ -112,9 +113,31 @@ const User = sequelize.define("users", {
   last_name: Sequelize.STRING,
   account_type: Sequelize.STRING
 });
+
+const Track = sequelize.define("tracks", {
+  title: Sequelize.STRING,
+  type: Sequelize.ENUM("UPLOAD", "PUBLICATION"),
+  public: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
+  description: Sequelize.TEXT,
+  composer: Sequelize.STRING,
+  avg_rating: Sequelize.FLOAT
+});
 //===================================
 
 sequelize.sync();
+
+//===================================
+//MP3 Tags w/ NodeID3
+//===================================
+
+let file =
+  "./assets/test/test.mp3" || new Buffer("Some Buffer of a (mp3) file");
+
+NodeID3.read(file, function(err, tags) {
+  console.dir(tags);
+  console.dir(err);
+});
+//===================================
 
 srv.listen("3030", () => {
   console.log("Backend API is on port 3030");
