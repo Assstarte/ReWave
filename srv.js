@@ -133,10 +133,13 @@ sequelize.sync();
 let file =
   "./assets/test/test.mp3" || new Buffer("Some Buffer of a (mp3) file");
 
-NodeID3.read(file, function(err, tags) {
-  console.dir(tags);
-  console.dir(err);
+let tags = NodeID3.read(file);
+
+srv.get("/test", (req, res) => {
+  res.status(200);
+  res.end(JSON.stringify(tags));
 });
+
 //===================================
 
 srv.listen("3030", () => {
