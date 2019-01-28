@@ -8,7 +8,7 @@ const multer = require("multer");
 const upload = multer({ dest: "assets/" });
 const srv = express();
 const cors = require("cors");
-srv.use(cors);
+srv.use(cors());
 
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
@@ -31,6 +31,7 @@ srv.use(bodyParser.json());
 srv.put("/upload", upload.single("track"), (req, res, next) => {
   // req.file is the `avatar` file
   // req.body will hold the text fields, if there were any
+  console.log(`======> PUT FILE Request Received`);
   console.dir(req.file);
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
