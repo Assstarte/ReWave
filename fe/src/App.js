@@ -16,6 +16,7 @@ import store from "./rdx/store";
 
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
+import Upload from "./components/Upload";
 
 class App extends Component {
   render() {
@@ -28,6 +29,7 @@ class App extends Component {
                 <Route path="/" component={SignIn} exact />
                 <Route path="/home" component={SignIn} />
                 <Route path="/register" component={SignUp} />
+                <Route path="/upload" component={Upload} />
               </Switch>
             </div>
           </Router>

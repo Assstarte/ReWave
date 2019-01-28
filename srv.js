@@ -4,7 +4,11 @@
 require("dotenv").config();
 const NodeID3 = require("node-id3");
 const express = require("express");
+const multer = require("multer");
+const upload = multer({ dest: "assets/" });
 const srv = express();
+const cors = require("cors");
+srv.use(cors);
 
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
@@ -19,6 +23,23 @@ srv.use(
 );
 
 srv.use(bodyParser.json());
+
+//===============
+//Express REST
+//===============
+
+srv.put("/upload", upload.single("track"), (req, res, next) => {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  console.dir(req.file);
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.status(201);
+  res.end(JSON.stringify(req.file));
+});
 
 //===============
 //GraphQL
