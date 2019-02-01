@@ -6,6 +6,7 @@ const NodeID3 = require("node-id3");
 const express = require("express");
 const multer = require("multer");
 const upload = multer({ dest: "assets/" });
+const fs = require("fs");
 const srv = express();
 const cors = require("cors");
 srv.use(cors());
@@ -24,22 +25,48 @@ srv.use(
 
 srv.use(bodyParser.json());
 
+//==============
+//CONST
+//==============
+
+const COVERS_REL_PATH = "./assets/covers/";
+const TRACKS_REL_PATH = "./assets/";
+
 //===============
 //Express REST
 //===============
 
 srv.put("/upload", upload.single("track"), (req, res, next) => {
-  // req.file is the `avatar` file
+  // req.file is the file
   // req.body will hold the text fields, if there were any
+  let tags = NodeID3.read(req.file.path);
   console.log(`======> PUT FILE Request Received`);
   console.dir(req.file);
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
+  console.log(`======> TAGS:`);
+  console.dir(tags);
+  // GET cover image Uint8 arr from tags
+  let ui8a = tags.image.imageBuffer;
+  let coverFileName = `${getRandomIntInclusive(1, 1000000)}__${tags.artist}_${
+    tags.title
+  }.${tags.image.mime}`;
+  fs.writeFile(COVERS_REL_PATH + coverFileName, new Buffer(ui8a), err => {
+    if (err) throw err;
+    console.log("The file has been saved!");
+  });
+
+  Track.create({
+    type: req.body.publication ? "PUBLICATION" : "UPLOAD",
+    public: req.body.private ? false : true,
+    description: req.body.description ? req.body.description : "N/A",
+    avg_rating: 0,
+    file_name: req.file.filename,
+    cover_name: coverFileName
+    //user_Id: 0,
+    //trackOwnerId: 0
+  });
+
   res.status(201);
-  res.end(JSON.stringify(req.file));
+  res.end(JSON.stringify(tags));
 });
 
 //===============
@@ -58,8 +85,7 @@ var schema = buildSchema(`
       user_login: String!,
       user_password: String!,
       user_email: String!,
-      user_first_name: String!,
-      user_last_name: String!,
+      user_full_name: String!,
       user_login_successfull: Boolean!
     }
 `);
@@ -131,25 +157,50 @@ const User = sequelize.define("users", {
   login: Sequelize.STRING,
   password: Sequelize.STRING,
   email: Sequelize.STRING,
-  first_name: Sequelize.STRING,
-  last_name: Sequelize.STRING,
-  account_type: Sequelize.STRING
+  full_name: Sequelize.STRING,
+  account_type: Sequelize.ENUM("USER", "ARTIST", "ADMIN")
 });
 
 const Track = sequelize.define("tracks", {
-  title: Sequelize.STRING,
   type: Sequelize.ENUM("UPLOAD", "PUBLICATION"),
   public: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
   description: Sequelize.TEXT,
-  composer: Sequelize.STRING,
-  avg_rating: Sequelize.FLOAT
+  avg_rating: { type: Sequelize.FLOAT, defaultValue: 0.0 },
+  file_name: { type: Sequelize.STRING, allowNull: false },
+  cover_name: { type: Sequelize.STRING, defaultValue: "nocover.jpg" }
 });
+
+const TagCollection = sequelize.define("tag_collections", {
+  //tags.title
+  title: Sequelize.STRING,
+  //tags.artist
+  artist: Sequelize.STRING,
+  //tags.album
+  album: Sequelize.STRING,
+  //tags.year
+  year: Sequelize.INTEGER,
+  //tags.composer
+  composer: Sequelize.STRING,
+  //tags.image.mime
+  imageType: Sequelize.STRING
+});
+
+//===============================
+
+//==========RELATIONSHIPS========
+Track.belongsToMany(TagCollection, { through: "Track_Tags" });
+TagCollection.belongsToMany(Track, { through: "Track_Tags" });
+
+User.hasMany(Track);
+Track.belongsTo(User, { as: "track_owner" });
+
+//Track.belongsToMany(Cover, {through: "Track_Covers"})
 //===================================
 
 sequelize.sync();
 
 //===================================
-//MP3 Tags w/ NodeID3
+//MP3 Tags w/ NodeID3 TEST SECTION
 //===================================
 
 let file =
@@ -163,6 +214,17 @@ srv.get("/test", (req, res) => {
 });
 
 //===================================
+
+//===================================
+//Custom functions
+//===================================
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //Включаючи мінімум та максимум
+}
+
+function deployTrackTagsToDb(track_id, tags) {}
 
 srv.listen("3030", () => {
   console.log("Backend API is on port 3030");
