@@ -7,7 +7,7 @@ class SignIn extends Component {
     return (
       <div className="bg-blurred-1 cover">
         <Header />
-        <main className="pa4 black-80">
+        <main className="pa4 black-80 mainpage">
           <form className="measure center">
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f4 fw6 ph0 mh0">Sign In</legend>

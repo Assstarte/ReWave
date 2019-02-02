@@ -13,6 +13,7 @@ body {
   background-color: #161616;
   height: 100vh;
   padding-top: 40px;
+  height: 70vh;
 }
 
 .dashboard-item {
@@ -26,5 +27,19 @@ body {
   text-decoration: none;
 }
 
-.dashboard-item:first-child {
+.mainpage {
+  height: 70vh;
+}
+
+footer,
+header {
+  height: 15vh;
+}
+
+.hover-bg-black:hover {
+  background: #000 !important;
+}
+
+.hover-bg-black:focus {
+  background: #000 !important;
 }
