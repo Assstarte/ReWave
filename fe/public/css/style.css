@@ -4,4 +4,27 @@
 
 body {
   overflow: hidden;
+  background: url("../assets/bg-blur-1.jpg");
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard {
+  background-color: #161616;
+  height: 100vh;
+  padding-top: 40px;
+}
+
+.dashboard-item {
+  list-style: none;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #fff;
+}
+
+.dashboard-item > a {
+  text-decoration: none;
+}
+
+.dashboard-item:first-child {
 }
