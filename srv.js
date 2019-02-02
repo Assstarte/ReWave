@@ -36,7 +36,7 @@ const TRACKS_REL_PATH = "./assets/";
 //Express REST
 //===============
 
-srv.put("/upload", upload.single("track"), (req, res, next) => {
+srv.put("/upload", upload.single("track"), async (req, res, next) => {
   // req.file is the file
   // req.body will hold the text fields, if there were any
   let tags = NodeID3.read(req.file.path);
@@ -54,7 +54,7 @@ srv.put("/upload", upload.single("track"), (req, res, next) => {
     console.log("The file has been saved!");
   });
 
-  Track.create({
+  let track = await Track.create({
     type: req.body.publication ? "PUBLICATION" : "UPLOAD",
     public: req.body.private ? false : true,
     description: req.body.description ? req.body.description : "N/A",
@@ -64,6 +64,8 @@ srv.put("/upload", upload.single("track"), (req, res, next) => {
     //user_Id: 0,
     //trackOwnerId: 0
   });
+
+  await deployTrackTagsToDb(track.dataValues.id, tags);
 
   res.status(201);
   res.end(JSON.stringify(tags));
@@ -224,7 +226,29 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min; //Включаючи мінімум та максимум
 }
 
-function deployTrackTagsToDb(track_id, tags) {}
+async function deployTrackTagsToDb(track_id, tags) {
+  let track = await Track.findOne({
+    where: {
+      id: track_id
+    }
+  });
+
+  let tag_collection = await TagCollection.create({
+    title: tags.title,
+    //tags.artist
+    artist: tags.artist,
+    //tags.album
+    album: tags.album,
+    //tags.year
+    year: tags.year,
+    //tags.composer
+    composer: tags.composer,
+    //tags.image.mime
+    imageType: tags.image.mime
+  });
+
+  let createdEntity = await track.addTag_collection([tag_collection]);
+}
 
 srv.listen("3030", () => {
   console.log("Backend API is on port 3030");
