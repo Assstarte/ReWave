@@ -12,7 +12,7 @@ class SignIn extends Component {
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f4 fw6 ph0 mh0">Sign In</legend>
               <div className="mt3">
-                <label className="db fw6 lh-copy f6" for="login">
+                <label className="db fw6 lh-copy f6" htmlFor="login">
                   Login
                 </label>
                 <input
@@ -23,7 +23,7 @@ class SignIn extends Component {
                 />
               </div>
               <div className="mv3">
-                <label className="db fw6 lh-copy f6" for="password">
+                <label className="db fw6 lh-copy f6" htmlFor="password">
                   Password
                 </label>
                 <input

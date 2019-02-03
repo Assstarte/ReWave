@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import UploadAvatar from "./UploadAvatar";
 
 class Upload extends Component {
   constructor(props) {
@@ -8,15 +9,19 @@ class Upload extends Component {
 
   render() {
     return (
-      <form
-        onSubmit={e => this.handleUploadSingle(e)}
-        action="/upload"
-        method="post"
-        encType="multipart/form-data"
-      >
-        <input ref={this.file_input_ref} type="file" name="track" />
-        <input type="submit" />
-      </form>
+      <React.Fragment>
+        <form
+          onSubmit={e => this.handleUploadSingle(e)}
+          action="/upload"
+          method="post"
+          encType="multipart/form-data"
+        >
+          <input ref={this.file_input_ref} type="file" name="track" />
+          <input type="submit" />
+        </form>
+
+        <UploadAvatar />
+      </React.Fragment>
     );
   }
 
