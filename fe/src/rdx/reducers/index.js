@@ -1,4 +1,6 @@
-const rootReducer = () =>
-  console.log(`TO BE REPLACED WITH ACTUAL combineReducers F`);
+import auth_reducer from "./auth_reducer";
+import { combineReducers } from "redux";
 
-export default rootReducer;
+export default combineReducers({
+  auth: auth_reducer
+});

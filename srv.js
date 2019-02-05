@@ -77,18 +77,39 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
 const express_graphql = require("express-graphql");
 const { buildSchema } = require("graphql");
 
-var schema = buildSchema(`
-    type Query {
-        exec_login(login: String!, password: String!): User
+const schema = buildSchema(`
+
+    type Success{
+      done: Boolean!
     }
 
     type User{
-      user_id: Int!,
-      user_login: String!,
-      user_password: String!,
-      user_email: String!,
-      user_full_name: String!,
-      user_login_successfull: Boolean!
+      id: ID!
+      login: String!
+      email: String!
+      full_name: String!
+      account_type: String!
+      createdAt: String!
+    }
+
+    input UserInput {
+      login: String!
+      password: String!
+      email: String!
+      full_name: String!
+    }
+
+    type RootQuery{
+      users: [User!]!
+    }
+
+    type RootMutation{
+      exec_signup(userInput: UserInput): Success!
+    }
+
+    schema {
+      query: RootQuery
+      mutation: RootMutation
     }
 `);
 
@@ -108,10 +129,39 @@ async function exec_login({ login, password }) {
     return { user_login_successfull: true };
   } else return { user_login_successfull: false };
 }
+
+async function exec_signup(args) {
+  let params = args.userInput;
+  let userExists = await User.findOne({
+    where: {
+      login: params.login
+    }
+  });
+  console.dir(user_exists);
+  if (!userExists) {
+    let createdUser = await User.create({
+      login: params.login,
+      password: params.password,
+      email: params.email,
+      full_name: params.full_name,
+      account_type: "USER"
+    });
+    console.dir(createdUser);
+    return JSON.stringify({ done: true });
+  } else return JSON.stringify({ done: false });
+}
+
+async function users() {
+  let response = await User.findAll();
+  console.dir(response);
+}
+
 //=========================
 
 let rootGraph = {
-  exec_login
+  exec_login,
+  exec_signup,
+  users
 };
 
 srv.use(
@@ -119,7 +169,13 @@ srv.use(
   express_graphql({
     schema,
     rootValue: rootGraph,
-    graphiql: true
+    graphiql: true,
+    formatError(err) {
+      if (!err.originalError) return err;
+      const data = err.originalError.data;
+      const message = err.message || "Oops! An error occurred ;(";
+      const code = err.originalError.code || 500;
+    }
   })
 );
 
@@ -173,17 +229,11 @@ const Track = sequelize.define("tracks", {
 });
 
 const TagCollection = sequelize.define("tag_collections", {
-  //tags.title
   title: Sequelize.STRING,
-  //tags.artist
   artist: Sequelize.STRING,
-  //tags.album
   album: Sequelize.STRING,
-  //tags.year
   year: Sequelize.INTEGER,
-  //tags.composer
   composer: Sequelize.STRING,
-  //tags.image.mime
   imageType: Sequelize.STRING
 });
 
@@ -235,15 +285,10 @@ async function deployTrackTagsToDb(track_id, tags) {
 
   let tag_collection = await TagCollection.create({
     title: tags.title,
-    //tags.artist
     artist: tags.artist,
-    //tags.album
     album: tags.album,
-    //tags.year
     year: tags.year,
-    //tags.composer
     composer: tags.composer,
-    //tags.image.mime
     imageType: tags.image.mime
   });
 

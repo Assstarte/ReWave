@@ -4,6 +4,10 @@ import App from "./App";
 import "tachyons";
 import * as serviceWorker from "./serviceWorker";
 
+import rootSaga from "./rdx/sagas";
+import store from "./rdx/store";
+store.runSaga(rootSaga);
+
 ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change

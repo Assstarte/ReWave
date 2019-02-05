@@ -19,6 +19,20 @@ import SignUp from "./components/SignUp";
 import Upload from "./components/Upload";
 import Main from "./components/Main";
 
+//==============
+//Fetch Bar
+//==============
+import { progressBarFetch, setOriginalFetch } from "react-fetch-progressbar";
+
+// Let react-fetch-progressbar know what the original fetch is.
+setOriginalFetch(window.fetch);
+
+/*
+  Now override the fetch with progressBarFetch, so the ProgressBar
+  knows how many requests are currently active.
+*/
+window.fetch = progressBarFetch;
+
 class App extends Component {
   render() {
     return (

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
+import { connect } from "react-redux";
 
 class SignIn extends Component {
   render() {
@@ -61,4 +62,22 @@ class SignIn extends Component {
   }
 }
 
-export default SignIn;
+const mapStateToProps = state => ({
+  loggedIn: state.auth.loggedIn,
+  pending: state.auth.request_pending,
+  done: state.auth.request_done,
+  error: state.auth.request_error,
+  user_id: state.auth.user_id,
+  user_name: state.auth.user_name
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SignIn);

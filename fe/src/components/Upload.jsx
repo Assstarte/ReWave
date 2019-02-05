@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import UploadAvatar from "./UploadAvatar";
+import { ProgressBar } from "react-fetch-progressbar";
 
 class Upload extends Component {
   constructor(props) {
@@ -19,6 +20,7 @@ class Upload extends Component {
           <input ref={this.file_input_ref} type="file" name="track" />
           <input type="submit" />
         </form>
+        <ProgressBar style={{ backgroundColor: "black", height: "10px" }} />
 
         <UploadAvatar />
       </React.Fragment>
