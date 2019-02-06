@@ -19,7 +19,7 @@ srv.set("trust proxy", 1); // trust first proxy
 srv.use(
   cookieSession({
     name: "session",
-    keys: ["key1", "key2"]
+    keys: ["key_one", "key_two"]
   })
 );
 
