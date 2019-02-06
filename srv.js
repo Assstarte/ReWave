@@ -44,31 +44,41 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
   console.dir(req.file);
   console.log(`======> TAGS:`);
   console.dir(tags);
-  // GET cover image Uint8 arr from tags
-  let ui8a = tags.image.imageBuffer;
-  let coverFileName = `${getRandomIntInclusive(1, 1000000)}__${tags.artist}_${
-    tags.title
-  }.${tags.image.mime}`;
-  fs.writeFile(COVERS_REL_PATH + coverFileName, new Buffer(ui8a), err => {
-    if (err) throw err;
-    console.log("The file has been saved!");
-  });
+  if (tags) {
+    // GET cover image Uint8 arr from tags
+    let coverFileName = null;
+    try {
+      let ui8a = tags.image.imageBuffer;
+      coverFileName = `${getRandomIntInclusive(1, 1000000)}__${tags.artist}_${
+        tags.title
+      }.${tags.image.mime}`;
+      fs.writeFile(COVERS_REL_PATH + coverFileName, new Buffer(ui8a), err => {
+        if (err) throw err;
+        console.log("The file has been saved!");
+      });
+    } catch (e) {
+      console.error(e.message);
+    }
 
-  let track = await Track.create({
-    type: req.body.publication ? "PUBLICATION" : "UPLOAD",
-    public: req.body.private ? false : true,
-    description: req.body.description ? req.body.description : "N/A",
-    avg_rating: 0,
-    file_name: req.file.filename,
-    cover_name: coverFileName
-    //user_Id: 0,
-    //trackOwnerId: 0
-  });
+    let track = await Track.create({
+      type: req.body.publication ? "PUBLICATION" : "UPLOAD",
+      public: req.body.private ? false : true,
+      description: req.body.description ? req.body.description : "N/A",
+      avg_rating: 0,
+      file_name: req.file.filename,
+      cover_name: coverFileName || null
+      //user_Id: 0,
+      //trackOwnerId: 0
+    });
 
-  await deployTrackTagsToDb(track.dataValues.id, tags);
+    await deployTrackTagsToDb(track.dataValues.id, tags);
 
-  res.status(201);
-  res.end(JSON.stringify(tags));
+    res.status(201);
+    res.end(JSON.stringify(tags));
+  } else {
+    res.status(400);
+    res.end(JSON.stringify({ created: false, error: "NO MP3 TAGS IN FILE" }));
+  }
 });
 
 //===============
@@ -284,12 +294,12 @@ async function deployTrackTagsToDb(track_id, tags) {
   });
 
   let tag_collection = await TagCollection.create({
-    title: tags.title,
-    artist: tags.artist,
-    album: tags.album,
-    year: tags.year,
-    composer: tags.composer,
-    imageType: tags.image.mime
+    title: tags.title || null,
+    artist: tags.artist || null,
+    album: tags.album || null,
+    year: tags.year || null,
+    composer: tags.composer || null,
+    imageType: tags.image ? tags.image.mime : null
   });
 
   let createdEntity = await track.addTag_collection([tag_collection]);
