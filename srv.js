@@ -147,7 +147,6 @@ async function exec_signup(args) {
       login: params.login
     }
   });
-  console.dir(user_exists);
   if (!userExists) {
     let createdUser = await User.create({
       login: params.login,
@@ -157,11 +156,12 @@ async function exec_signup(args) {
       account_type: "USER"
     });
     console.dir(createdUser);
-    return JSON.stringify({ done: true });
-  } else return JSON.stringify({ done: false });
+    return { done: true };
+  } else return { done: false };
 }
 
-async function users() {
+async function users({}, { session }) {
+  console.log(session);
   let response = await User.findAll();
   console.dir(response);
 }
@@ -176,7 +176,7 @@ let rootGraph = {
 
 srv.use(
   "/api",
-  express_graphql({
+  express_graphql(req => ({
     schema,
     rootValue: rootGraph,
     graphiql: true,
@@ -185,8 +185,9 @@ srv.use(
       const data = err.originalError.data;
       const message = err.message || "Oops! An error occurred ;(";
       const code = err.originalError.code || 500;
-    }
-  })
+    },
+    context: { session: req.session }
+  }))
 );
 
 //=========================

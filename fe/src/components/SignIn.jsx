@@ -3,7 +3,15 @@ import Footer from "./Footer";
 import Header from "./Header";
 import { connect } from "react-redux";
 
+import { LOGIN_REQUEST } from "../rdx/actions/types";
+import { SIGNUP_REQUEST } from "../rdx/actions/types";
+
 class SignIn extends Component {
+  componentDidMount() {
+    this.props.dispatch({ type: SIGNUP_REQUEST });
+    console.log("DID MOUNT");
+  }
+
   render() {
     return (
       <div className="bg-blurred-1 cover">

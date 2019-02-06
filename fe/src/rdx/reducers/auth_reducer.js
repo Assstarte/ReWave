@@ -1,7 +1,9 @@
 import {
   LOGIN_REQUEST,
   LOGIN_REQUEST_SUCCESS,
-  LOGIN_REQUEST_FAILURE
+  LOGIN_REQUEST_FAILURE,
+  SIGNUP_REQUEST,
+  SIGNUP_SUCCESS
 } from "../actions/types";
 
 const initialState = {
@@ -14,6 +16,7 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
+  let server_response;
   switch (action.type) {
     case LOGIN_REQUEST:
       return {
@@ -27,7 +30,7 @@ export default function(state = initialState, action) {
       };
 
     case LOGIN_REQUEST_SUCCESS:
-      let server_response = action.payload;
+      server_response = action.payload;
       //SUCCESS
       if (server_response.loggedIn === true) {
         return {
@@ -38,6 +41,45 @@ export default function(state = initialState, action) {
           request_done: true,
           user_id: server_response.id,
           user_name: server_response.login
+        };
+      }
+      //ERROR
+      else {
+        return {
+          ...state,
+          loggedIn: false,
+          request_pending: false,
+          request_error: true,
+          request_done: true,
+          user_id: null,
+          user_name: null
+        };
+      }
+
+    case SIGNUP_REQUEST:
+      return {
+        ...state,
+        loggedIn: false,
+        request_pending: true,
+        request_error: false,
+        request_done: false,
+        user_id: null,
+        user_name: null
+      };
+
+    case SIGNUP_SUCCESS:
+      server_response = action.payload;
+
+      //SUCCESS
+      if (server_response.exec_signup.done === true) {
+        return {
+          ...state,
+          loggedIn: false,
+          request_pending: false,
+          request_error: false,
+          request_done: true,
+          user_id: null,
+          user_name: null
         };
       }
       //ERROR

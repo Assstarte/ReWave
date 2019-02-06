@@ -16,4 +16,6 @@ const store = createStore(
 
 store.runSaga = sagaMiddleware.run;
 
+store.subscribe(() => console.log(store.getState()));
+
 export default store;
