@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import { connect } from "react-redux";
+import AlertDismissable from "./bootstrap/AlertDismissable";
 
 //========
 //Actions
@@ -25,6 +26,15 @@ class SignUp extends Component {
       <div className="bg-blurred-1 cover">
         <Header />
         <main className="pa4 black-80">
+          <div className="tc">
+            <AlertDismissable
+              type="danger"
+              heading="Oops! An error occurred :("
+              message="Looks like such account already exists"
+              display={this.props.error ? true : false}
+            />
+          </div>
+
           <form
             className="measure center"
             onSubmit={e => this.submitSignupRequest(e)}

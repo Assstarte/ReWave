@@ -4,7 +4,8 @@ import {
   LOGIN_REQUEST_FAILURE,
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
-  SIGNUP_FAILURE
+  SIGNUP_FAILURE,
+  DISMISS_ERRORS
 } from "../actions/types";
 
 const initialState = {
@@ -102,6 +103,12 @@ export default function(state = initialState, action) {
         request_pending: false,
         request_error: true,
         request_done: true
+      };
+
+    case DISMISS_ERRORS:
+      return {
+        ...state,
+        request_error: false
       };
 
     default:
