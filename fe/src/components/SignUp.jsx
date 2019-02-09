@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import { connect } from "react-redux";
-import AlertDismissable from "./bootstrap/AlertDismissable";
+import AlertErrorDismissable from "./bootstrap/AlertErrorDismissable";
 
 //========
 //Actions
 //========
 import { AC_SIGNUP } from "../rdx/actions";
+import AlertSuccessForwardTo from "./bootstrap/AlertSuccessForwardTo";
 
 class SignUp extends Component {
   constructor(props) {
@@ -27,11 +28,19 @@ class SignUp extends Component {
         <Header />
         <main className="pa4 black-80">
           <div className="tc">
-            <AlertDismissable
+            <AlertErrorDismissable
               type="danger"
               heading="Oops! An error occurred :("
               message="Looks like such account already exists"
               display={this.props.error ? true : false}
+            />
+
+            <AlertSuccessForwardTo
+              type="success"
+              heading="Thank you!"
+              message="Account Created!"
+              display={this.props.done && !this.props.error ? true : false}
+              history={this.props.history}
             />
           </div>
 

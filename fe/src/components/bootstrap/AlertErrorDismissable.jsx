@@ -5,7 +5,7 @@ import store from "../../rdx/store";
 
 import { DISMISS_ERRORS } from "../../rdx/actions/types";
 
-class AlertDismissable extends React.Component {
+class AlertErrorDismissable extends React.Component {
   constructor(props) {
     super(props);
     //this.state = props.displayOnce ? { show: true } : { show: false };
@@ -23,19 +23,14 @@ class AlertDismissable extends React.Component {
           show={this.props.display}
           variant={this.props.type}
           style={{
-            width: "200px",
-            height: "100px",
-            fontSize: "12px",
-            position: "absolute",
-            top: "10%",
-            left: "10%",
-            color: "#000"
+            position: "fixed"
           }}
         >
           <Alert.Heading
             style={{
               color: "#000",
-              fontSize: "12px"
+              fontSize: "12px",
+              height: "10px"
             }}
           >
             {this.props.heading}
@@ -53,4 +48,4 @@ class AlertDismissable extends React.Component {
   }
 }
 
-export default AlertDismissable;
+export default AlertErrorDismissable;
