@@ -37,7 +37,7 @@ export function* do_login_saga() {
   }
 }
 
-export function* do_signup_function() {
+export function* do_signup_saga() {
   console.log("IN DO SAGA");
   try {
     const srv_payload = yield call([gql, gql.request], GQL_SIGNUP);
@@ -50,5 +50,5 @@ export function* do_signup_function() {
 export default function* watch_login_saga() {
   console.log("IN WATCHER SAGA");
   yield takeLatest(LOGIN_REQUEST, do_login_saga);
-  yield takeEvery(SIGNUP_REQUEST, do_signup_function);
+  yield takeEvery(SIGNUP_REQUEST, do_signup_saga);
 }
