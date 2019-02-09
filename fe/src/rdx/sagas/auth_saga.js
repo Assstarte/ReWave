@@ -12,19 +12,6 @@ import { gql } from "../../constants";
 //================
 //GQL Queries
 //================
-const GQL_LOGIN = ``;
-const GQL_SIGNUP = `
-  mutation{
-    exec_signup(userInput: {
-      login: "SAGA RABOTAET!",
-      password: "1234",
-      email: "igorlox111@lox.ru",
-      full_name: "Sobaka Pidar"
-    }){
-      done
-    }
-  }
-`;
 //================
 
 export function* do_login_saga() {
@@ -37,17 +24,32 @@ export function* do_login_saga() {
   }
 }
 
-export function* do_signup_saga() {
+export function* do_signup_saga(action) {
   console.log("IN DO SAGA");
+  console.dir(action.payload);
+  const GQL = `
+  mutation{
+    exec_signup(userInput: {
+      login: "${action.payload.un}",
+      password: "${action.payload.pw}",
+      email: "${action.payload.em}",
+      full_name: "${action.payload.fn}"
+    }){
+      done
+    }
+  }
+`;
+
+  console.dir(`==============> GQL_QUERY ====> ${GQL}`);
   try {
-    const srv_payload = yield call([gql, gql.request], GQL_SIGNUP);
+    const srv_payload = yield call([gql, gql.request], GQL);
     yield put({ type: SIGNUP_SUCCESS, payload: srv_payload });
   } catch (err) {
     yield put({ type: SIGNUP_FAILURE, payload: err.message });
   }
 }
 
-export default function* watch_login_saga() {
+export default function* watch_auth_saga() {
   console.log("IN WATCHER SAGA");
   yield takeLatest(LOGIN_REQUEST, do_login_saga);
   yield takeEvery(SIGNUP_REQUEST, do_signup_saga);

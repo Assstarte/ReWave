@@ -5,9 +5,9 @@
   "dependencies": {
     "bootstrap": "^4.2.1",
     "graphql-request": "^1.8.2",
-    "react": "^16.7.0",
+    "react": "^16.8.1",
     "react-bootstrap": "^1.0.0-beta.5",
-    "react-dom": "^16.7.0",
+    "react-dom": "^16.8.1",
     "react-fetch-progressbar": "0.0.3",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",

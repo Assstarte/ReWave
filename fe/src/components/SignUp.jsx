@@ -1,14 +1,34 @@
 import React, { Component } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
+import { connect } from "react-redux";
+
+//========
+//Actions
+//========
+import { AC_SIGNUP } from "../rdx/actions";
 
 class SignUp extends Component {
+  constructor(props) {
+    super(props);
+    this._loginRef = React.createRef();
+    this._passwordRef = React.createRef();
+    this._emailRef = React.createRef();
+    this._fullNameRef = React.createRef();
+
+    //Bind context to handlers
+    this.submitSignupRequest.bind(this);
+  }
+
   render() {
     return (
       <div className="bg-blurred-1 cover">
         <Header />
         <main className="pa4 black-80">
-          <form className="measure center">
+          <form
+            className="measure center"
+            onSubmit={e => this.submitSignupRequest(e)}
+          >
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f4 fw6 ph0 mh0">Sign Up</legend>
               <div className="mt3">
@@ -20,6 +40,7 @@ class SignUp extends Component {
                   type="text"
                   name="login"
                   id="login"
+                  ref={this._loginRef}
                 />
               </div>
               <div className="mv3">
@@ -31,6 +52,7 @@ class SignUp extends Component {
                   type="password"
                   name="password"
                   id="password"
+                  ref={this._passwordRef}
                 />
               </div>
               <div className="mv3">
@@ -42,6 +64,7 @@ class SignUp extends Component {
                   type="text"
                   name="fullname"
                   id="fullname"
+                  ref={this._fullNameRef}
                 />
               </div>
               <div className="mv3">
@@ -53,6 +76,7 @@ class SignUp extends Component {
                   type="email"
                   name="email-address"
                   id="email-address"
+                  ref={this._emailRef}
                 />
               </div>
             </fieldset>
@@ -75,6 +99,38 @@ class SignUp extends Component {
       </div>
     );
   }
+
+  //=============
+  //Handlers
+  //=============
+  submitSignupRequest(e) {
+    e.preventDefault();
+    this.props.dispatch(
+      this.props.AC_SIGNUP({
+        un: this._loginRef.current.value,
+        pw: this._passwordRef.current.value,
+        em: this._emailRef.current.value,
+        fn: this._fullNameRef.current.value
+      })
+    );
+  }
 }
 
-export default SignUp;
+const mapStateToProps = state => ({
+  loggedIn: state.auth.loggedIn,
+  pending: state.auth.request_pending,
+  done: state.auth.request_done,
+  error: state.auth.request_error,
+  user_id: state.auth.user_id,
+  user_name: state.auth.user_name
+});
+
+const mapDispatchToProps = dispatch => ({
+  dispatch,
+  AC_SIGNUP
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SignUp);

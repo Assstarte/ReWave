@@ -3,7 +3,8 @@ import {
   LOGIN_REQUEST_SUCCESS,
   LOGIN_REQUEST_FAILURE,
   SIGNUP_REQUEST,
-  SIGNUP_SUCCESS
+  SIGNUP_SUCCESS,
+  SIGNUP_FAILURE
 } from "../actions/types";
 
 const initialState = {
@@ -94,6 +95,14 @@ export default function(state = initialState, action) {
           user_name: null
         };
       }
+
+    case SIGNUP_FAILURE:
+      return {
+        ...state,
+        request_pending: false,
+        request_error: true,
+        request_done: true
+      };
 
     default:
       return state;
