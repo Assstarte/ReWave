@@ -109,8 +109,14 @@ const schema = buildSchema(`
       full_name: String!
     }
 
+    input LoginInput {
+      login: String!
+      password: String!
+    }
+
     type RootQuery{
       users: [User!]!
+      exec_login(loginInput: LoginInput): Success!
     }
 
     type RootMutation{
@@ -124,11 +130,12 @@ const schema = buildSchema(`
 `);
 
 //========Resolvers========
-async function exec_login({ login, password }) {
+async function exec_login(args, { session }) {
+  let params = args.loginInput;
   let checkQuery = await User.findOne({
     where: {
-      login,
-      password
+      login: params.login,
+      password: params.password
     }
   });
 
@@ -136,8 +143,10 @@ async function exec_login({ login, password }) {
     checkQuery = JSON.parse(JSON.stringify(checkQuery));
     delete checkQuery.password;
     let resultUser = JSON.stringify(checkQuery);
-    return { user_login_successfull: true };
-  } else return { user_login_successfull: false };
+    session = resultUser;
+
+    return { done: true };
+  } else return { done: false };
 }
 
 async function exec_signup(args) {

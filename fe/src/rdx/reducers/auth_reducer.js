@@ -35,7 +35,7 @@ export default function(state = initialState, action) {
     case LOGIN_REQUEST_SUCCESS:
       server_response = action.payload;
       //SUCCESS
-      if (server_response.loggedIn === true) {
+      if (server_response.exec_login.done === true) {
         return {
           ...state,
           loggedIn: true,

@@ -2,14 +2,21 @@ import React, { Component } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import { connect } from "react-redux";
+import AlertSuccessForwardTo from "./bootstrap/AlertSuccessForwardTo";
 
-import { LOGIN_REQUEST } from "../rdx/actions/types";
-import { SIGNUP_REQUEST } from "../rdx/actions/types";
+//========
+//Actions
+//========
+import { AC_LOGIN } from "../rdx/actions";
 
 class SignIn extends Component {
-  componentDidMount() {
-    this.props.dispatch({ type: SIGNUP_REQUEST });
-    console.log("DID MOUNT");
+  constructor(props) {
+    super(props);
+    this._loginRef = React.createRef();
+    this._passwordRef = React.createRef();
+
+    //Bind context to handlers
+    this.submitLoginRequest.bind(this);
   }
 
   render() {
@@ -17,7 +24,10 @@ class SignIn extends Component {
       <div className="bg-blurred-1 cover">
         <Header />
         <main className="pa4 black-80 mainpage">
-          <form className="measure center">
+          <form
+            className="measure center"
+            onSubmit={e => this.submitLoginRequest(e)}
+          >
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f4 fw6 ph0 mh0">Sign In</legend>
               <div className="mt3">
@@ -29,6 +39,7 @@ class SignIn extends Component {
                   type="text"
                   name="login"
                   id="login"
+                  ref={this._loginRef}
                 />
               </div>
               <div className="mv3">
@@ -40,6 +51,7 @@ class SignIn extends Component {
                   type="password"
                   name="password"
                   id="password"
+                  ref={this._passwordRef}
                 />
               </div>
               <label className="pa0 ma0 lh-copy f6 pointer">
@@ -56,7 +68,7 @@ class SignIn extends Component {
             </div>
             <div className="lh-copy mt3">
               <a href="#0" className="f6 link dim black db">
-                Sign up
+                Sign Up
               </a>
               <a href="#0" className="f6 link dim black db">
                 Forgot your password?
@@ -66,6 +78,16 @@ class SignIn extends Component {
         </main>
         <Footer />
       </div>
+    );
+  }
+
+  submitLoginRequest(e) {
+    e.preventDefault();
+    this.props.dispatch(
+      this.props.AC_LOGIN({
+        un: this._loginRef.current.value,
+        pw: this._passwordRef.current.value
+      })
     );
   }
 }
@@ -81,7 +103,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => {
   return {
-    dispatch
+    dispatch,
+    AC_LOGIN
   };
 };
 

@@ -14,11 +14,21 @@ import { gql } from "../../constants";
 //================
 //================
 
-export function* do_login_saga() {
+export function* do_login_saga(action) {
+  console.dir(action.payload);
+  const GQL = `
+  query{
+    exec_login(loginInput: {
+      login: "${action.payload.un}",
+      password: "${action.payload.pw}"
+    }){
+      done
+    }
+  }
+`;
   try {
-    const srv_payload = yield call(gql.request, "QUERY");
-    const srv_payload_json = yield call(srv_payload.json());
-    yield put({ type: LOGIN_REQUEST_SUCCESS, payload: srv_payload_json });
+    const srv_payload = yield call([gql, gql.request], GQL);
+    yield put({ type: LOGIN_REQUEST_SUCCESS, payload: srv_payload });
   } catch (err) {
     yield put({ type: LOGIN_REQUEST_FAILURE, payload: err.message });
   }
