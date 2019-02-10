@@ -9,7 +9,12 @@ const upload = multer({ dest: "assets/" });
 const fs = require("fs");
 const srv = express();
 const cors = require("cors");
-srv.use(cors());
+srv.use(
+  cors({
+    origin: process.env.FRONT_HOST || "http://localhost:3000",
+    credentials: true
+  })
+);
 
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
@@ -19,7 +24,7 @@ srv.set("trust proxy", 1); // trust first proxy
 srv.use(
   cookieSession({
     name: "session",
-    keys: ["key_one", "key_two"]
+    keys: ["key1", "key2"]
   })
 );
 
@@ -143,7 +148,10 @@ async function exec_login(args, { session }) {
     checkQuery = JSON.parse(JSON.stringify(checkQuery));
     delete checkQuery.password;
     let resultUser = JSON.stringify(checkQuery);
-    session = resultUser;
+    console.dir(session);
+    console.dir(`RESULT USER ====> ${resultUser}`);
+    session.auth = resultUser;
+    console.dir(session);
 
     return { done: true };
   } else return { done: false };
