@@ -35,15 +35,15 @@ export default function(state = initialState, action) {
     case LOGIN_REQUEST_SUCCESS:
       server_response = action.payload;
       //SUCCESS
-      if (server_response.exec_login.done === true) {
+      if (server_response.success.done === true) {
         return {
           ...state,
           loggedIn: true,
           request_pending: false,
           request_error: false,
           request_done: true,
-          user_id: server_response.id,
-          user_name: server_response.login
+          user_id: server_response.userdata.id,
+          user_name: server_response.userdata.login
         };
       }
       //ERROR
@@ -58,6 +58,14 @@ export default function(state = initialState, action) {
           user_name: null
         };
       }
+
+    case LOGIN_REQUEST_FAILURE:
+      return {
+        ...state,
+        request_pending: false,
+        request_error: true,
+        request_done: true
+      };
 
     case SIGNUP_REQUEST:
       return {

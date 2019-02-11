@@ -107,6 +107,11 @@ const schema = buildSchema(`
       createdAt: String!
     }
 
+    type LoginResult{
+      success: Success!
+      userdata: User!
+    }
+
     input UserInput {
       login: String!
       password: String!
@@ -121,7 +126,7 @@ const schema = buildSchema(`
 
     type RootQuery{
       users: [User!]!
-      exec_login(loginInput: LoginInput): Success!
+      exec_login(loginInput: LoginInput): LoginResult!
     }
 
     type RootMutation{
@@ -144,17 +149,30 @@ async function exec_login(args, { session }) {
     }
   });
 
-  if (checkQuery) {
-    checkQuery = JSON.parse(JSON.stringify(checkQuery));
-    delete checkQuery.password;
-    let resultUser = JSON.stringify(checkQuery);
-    console.dir(session);
-    console.dir(`RESULT USER ====> ${resultUser}`);
-    session.auth = resultUser;
-    console.dir(session);
+  if (!checkQuery) {
+    console.error("Error will be thrown and resolver terminated!");
+    throw new Error("Invalid Credentials");
+  }
 
-    return { done: true };
-  } else return { done: false };
+  checkQuery = JSON.parse(JSON.stringify(checkQuery));
+  delete checkQuery.password;
+  let resultUser = JSON.stringify(checkQuery);
+  console.dir(session);
+  console.dir(`RESULT USER ====> ${resultUser}`);
+  session.auth = resultUser;
+  console.dir(session);
+
+  return {
+    success: { done: true },
+    userdata: {
+      id: checkQuery.id,
+      login: checkQuery.login,
+      email: checkQuery.email,
+      full_name: checkQuery.full_name,
+      account_type: checkQuery.account_type,
+      createdAt: checkQuery.createdAt
+    }
+  };
 }
 
 async function exec_signup(args) {
@@ -198,10 +216,13 @@ srv.use(
     rootValue: rootGraph,
     graphiql: true,
     formatError(err) {
-      if (!err.originalError) return err;
-      const data = err.originalError.data;
-      const message = err.message || "Oops! An error occurred ;(";
-      const code = err.originalError.code || 500;
+      // <-- log the error
+      return {
+        message: err.message,
+        code: 400, // <--
+        locations: err.locations,
+        path: err.path
+      };
     },
     context: { session: req.session }
   }))

@@ -65,7 +65,25 @@ class SignIn extends Component {
                 type="submit"
                 value="Sign in"
               />
+
+              <div
+                className="spinner"
+                style={{
+                  display: this.props.pending ? "inline-block" : "none",
+                  float: "right"
+                }}
+              >
+                <span>LOADING...</span>
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+              </div>
             </div>
+
             <div className="lh-copy mt3">
               <a href="#0" className="f6 link dim black db">
                 Sign Up

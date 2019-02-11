@@ -17,18 +17,31 @@ import { gql } from "../../constants";
 export function* do_login_saga(action) {
   console.dir(action.payload);
   const GQL = `
-  query{
-    exec_login(loginInput: {
-      login: "${action.payload.un}",
-      password: "${action.payload.pw}"
-    }){
-      done
+  query login($loginInput: LoginInput){
+    exec_login(loginInput: $loginInput){
+      success{
+        done
+      }
+      userdata{
+        id
+        login
+        email
+        full_name
+        account_type
+      }
     }
   }
 `;
+
+  const variables = {
+    loginInput: {
+      login: action.payload.un,
+      password: action.payload.pw
+    }
+  };
   try {
-    const srv_payload = yield call([gql, gql.request], GQL);
-    yield put({ type: LOGIN_REQUEST_SUCCESS, payload: srv_payload });
+    const srv_payload = yield call([gql, gql.request], GQL, variables);
+    yield put({ type: LOGIN_REQUEST_SUCCESS, payload: srv_payload.exec_login });
   } catch (err) {
     yield put({ type: LOGIN_REQUEST_FAILURE, payload: err.message });
   }
