@@ -3,6 +3,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import { connect } from "react-redux";
 import AlertSuccessForwardTo from "./bootstrap/AlertSuccessForwardTo";
+import AlertErrorDismissable from "./bootstrap/AlertErrorDismissable";
 
 //========
 //Actions
@@ -24,6 +25,24 @@ class SignIn extends Component {
       <div className="bg-blurred-1 cover">
         <Header />
         <main className="pa4 black-80 mainpage">
+          <div className="tc">
+            <AlertErrorDismissable
+              type="danger"
+              heading="Lamentably!"
+              message="Invalid Credentials"
+              display={this.props.error ? true : false}
+            />
+
+            <AlertSuccessForwardTo
+              type="success"
+              heading="Success!"
+              message={`Welcome, ${this.props.user_name}`}
+              btnText="Dashboard >"
+              path="/dash"
+              display={this.props.done && !this.props.error ? true : false}
+              history={this.props.history}
+            />
+          </div>
           <form
             className="measure center"
             onSubmit={e => this.submitLoginRequest(e)}

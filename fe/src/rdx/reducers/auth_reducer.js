@@ -124,7 +124,8 @@ export default function(state = initialState, action) {
     case DISMISS_SUCCESS:
       return {
         ...state,
-        initialState
+        request_error: false,
+        request_done: false
       };
 
     default:

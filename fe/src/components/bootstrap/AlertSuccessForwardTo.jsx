@@ -34,10 +34,10 @@ class AlertSuccessForwardTo extends React.Component {
           <hr />
           <div className="d-flex justify-content-end">
             <Button
-              onClick={e => this.forwardTo("/login")}
+              onClick={e => this.forwardTo(this.props.path || "/login")}
               variant="outline-success"
             >
-              Login
+              {this.props.btnText}
             </Button>
           </div>
         </Alert>

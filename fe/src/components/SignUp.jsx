@@ -40,6 +40,7 @@ class SignUp extends Component {
               heading="Thank you!"
               message="Account Created!"
               display={this.props.done && !this.props.error ? true : false}
+              btnText="Login"
               history={this.props.history}
             />
           </div>
@@ -106,6 +107,23 @@ class SignUp extends Component {
                 type="submit"
                 value="Sign up"
               />
+
+              <div
+                className="spinner"
+                style={{
+                  display: this.props.pending ? "inline-block" : "none",
+                  float: "right"
+                }}
+              >
+                <span>LOADING...</span>
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+              </div>
             </div>
             <div className="lh-copy mt3">
               <a href="#0" className="f6 link dim black db">
