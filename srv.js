@@ -42,6 +42,15 @@ const TRACKS_REL_PATH = "./assets/";
 //===============
 
 srv.put("/upload", upload.single("track"), async (req, res, next) => {
+  console.log("SESS");
+  console.dir(req.session);
+
+  //Retreiving the actual session object
+  let session_auth_data = JSON.parse(req.session.auth);
+  //Extracting User from DB
+  let uploader = await User.findByPk(session_auth_data.id);
+
+  if (!uploader) throw new Error("Not Authenticated!");
   // req.file is the file
   // req.body will hold the text fields, if there were any
   let tags = NodeID3.read(req.file.path);
@@ -49,9 +58,14 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
   console.dir(req.file);
   console.log(`======> TAGS:`);
   console.dir(tags);
+
+  let coverFileName = null;
+
+  //CASE WHEN WE HAVE ACTUAL TAGS
   if (tags) {
     // GET cover image Uint8 arr from tags
-    let coverFileName = null;
+
+    //We are trying to obtain & save cover image from mp3 meta if such exists
     try {
       let ui8a = tags.image.imageBuffer;
       coverFileName = `${getRandomIntInclusive(1, 1000000)}__${tags.artist}_${
@@ -71,18 +85,36 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
       description: req.body.description ? req.body.description : "N/A",
       avg_rating: 0,
       file_name: req.file.filename,
-      cover_name: coverFileName || null
-      //user_Id: 0,
-      //trackOwnerId: 0
+      friendly_file_name: req.body.friendly_name,
+      cover_name: coverFileName || "nocover.jpg"
     });
+
+    await uploader.addTrack([track]);
 
     await deployTrackTagsToDb(track.dataValues.id, tags);
 
     res.status(201);
     res.end(JSON.stringify(tags));
-  } else {
-    res.status(400);
-    res.end(JSON.stringify({ created: false, error: "NO MP3 TAGS IN FILE" }));
+  }
+
+  //IF THERE ARE NO TAGS AT ALL --->
+  else {
+    console.log("SESS");
+    console.dir(req.session);
+    let track = await Track.create({
+      type: req.body.publication ? "PUBLICATION" : "UPLOAD",
+      public: req.body.private ? false : true,
+      description: req.body.description ? req.body.description : "N/A",
+      avg_rating: 0,
+      file_name: req.file.filename,
+      friendly_file_name: req.body.friendly_name,
+      cover_name: coverFileName || "nocover.jpg"
+    });
+
+    await uploader.addTrack([track]);
+
+    res.status(201);
+    res.end(JSON.stringify({ track }));
   }
 });
 
@@ -274,7 +306,16 @@ const Track = sequelize.define("tracks", {
   description: Sequelize.TEXT,
   avg_rating: { type: Sequelize.FLOAT, defaultValue: 0.0 },
   file_name: { type: Sequelize.STRING, allowNull: false },
-  cover_name: { type: Sequelize.STRING, defaultValue: "nocover.jpg" }
+  friendly_file_name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    defaultValue: "Untitled"
+  },
+  cover_name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    defaultValue: "nocover.jpg"
+  }
 });
 
 const TagCollection = sequelize.define("tag_collections", {

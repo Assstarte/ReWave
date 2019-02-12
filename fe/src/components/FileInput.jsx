@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { ProgressBar } from "react-fetch-progressbar";
 
+import { PURE_BACKEND_HOST } from "../constants";
+
 class FileInput extends Component {
   constructor(props) {
     super(props);
@@ -55,18 +57,25 @@ class FileInput extends Component {
     let file = this.file_input_ref.current.files[0];
     console.dir(file);
 
-    let formData = new FormData();
+    if (file.type.includes("audio/")) {
+      let formData = new FormData();
 
-    formData.append("track", file, file.name);
-    console.dir(formData);
-    fetch("http://localhost:3030/upload/", {
-      method: "PUT",
-      body: formData,
-      type: `cors`
-    })
-      .then(response => response.json())
-      .catch(error => console.error("Error:", error))
-      .then(response => console.log("Success:", JSON.stringify(response)));
+      formData.append("track", file, file.name);
+      formData.append("friendly_name", file.name);
+      console.dir(formData);
+      fetch(`${PURE_BACKEND_HOST}upload/`, {
+        method: "PUT",
+        body: formData,
+        type: `cors`,
+        credentials: `include`
+      })
+        .then(response => response.json())
+        .catch(error => console.error("Error:", error))
+        .then(response => console.log("Success:", JSON.stringify(response)));
+    } else {
+      //TODO: Generate UI Friendly Error explaining that the file is not an audio
+      console.error("Oops! Looks like this is not an audio file! ;(");
+    }
   }
 
   onFileInputChange(e) {
