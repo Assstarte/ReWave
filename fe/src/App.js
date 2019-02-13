@@ -48,7 +48,7 @@ class App extends Component {
               <Switch>
                 <Route
                   path="/"
-                  component={store.getState().loggedIn ? Main : SignIn}
+                  component={store.getState().auth.loggedIn ? Main : SignIn}
                   exact
                 />
                 <Route path="/login" component={SignIn} />
@@ -64,5 +64,10 @@ class App extends Component {
     );
   }
 }
+
+//Persisting Redux State
+store.subscribe(() => {
+  localStorage.setItem("reduxState", JSON.stringify(store.getState()));
+});
 
 export default App;
