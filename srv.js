@@ -94,7 +94,7 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
     await deployTrackTagsToDb(track.dataValues.id, tags);
 
     res.status(201);
-    res.end(JSON.stringify(tags));
+    res.end(JSON.stringify({ hasTags: true, tags }));
   }
 
   //IF THERE ARE NO TAGS AT ALL --->
@@ -114,8 +114,18 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
     await uploader.addTrack([track]);
 
     res.status(201);
-    res.end(JSON.stringify({ track }));
+    res.end(JSON.stringify({ hasTags: false }));
   }
+});
+
+//WHOAMI
+srv.get("/whoami", async (req, res) => {
+  res.status(200);
+  res.end(
+    req.session.auth
+      ? JSON.stringify(req.session.auth)
+      : JSON.stringify({ session: "DENIED" })
+  );
 });
 
 //===============

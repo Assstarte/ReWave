@@ -114,6 +114,10 @@ header {
   text-align: center;
 }
 
+.login-greeting {
+  margin-right: 15px;
+}
+
 /*Buttons*/
 .fill:hover,
 .fill:focus {

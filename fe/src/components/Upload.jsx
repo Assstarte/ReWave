@@ -9,7 +9,6 @@ class Upload extends Component {
     return (
       <React.Fragment>
         <div className="tc">
-          <FileInfo />
           {/* <FileForm/> */}
           <FileInput />
         </div>

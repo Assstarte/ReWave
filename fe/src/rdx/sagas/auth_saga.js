@@ -5,7 +5,9 @@ import {
   LOGIN_REQUEST_FAILURE,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
-  SIGNUP_REQUEST
+  SIGNUP_REQUEST,
+  WHOAMI,
+  WHOAMI_REQUEST
 } from "../actions/types";
 import { gql } from "../../constants";
 
@@ -72,8 +74,21 @@ export function* do_signup_saga(action) {
   }
 }
 
+export function* do_whoami_saga() {
+  const raw_payload = yield call(fetch, "http://localhost:3030/whoami", {
+    credentials: `include`,
+    mode: `cors`
+  });
+
+  console.dir(raw_payload);
+
+  const srv_payload = yield call([raw_payload, raw_payload.json]);
+  yield put({ type: WHOAMI, payload: srv_payload });
+}
+
 export default function* watch_auth_saga() {
   console.log("IN WATCHER SAGA");
   yield takeLatest(LOGIN_REQUEST, do_login_saga);
   yield takeEvery(SIGNUP_REQUEST, do_signup_saga);
+  yield takeLatest(WHOAMI_REQUEST, do_whoami_saga);
 }

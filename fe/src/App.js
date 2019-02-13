@@ -23,6 +23,7 @@ import Main from "./components/Main";
 //Fetch Bar
 //==============
 import { progressBarFetch, setOriginalFetch } from "react-fetch-progressbar";
+import { WHOAMI_REQUEST } from "./rdx/actions/types";
 
 // Let react-fetch-progressbar know what the original fetch is.
 setOriginalFetch(window.fetch);
@@ -34,6 +35,10 @@ setOriginalFetch(window.fetch);
 window.fetch = progressBarFetch;
 
 class App extends Component {
+  componentDidMount() {
+    store.dispatch({ type: WHOAMI_REQUEST });
+  }
+
   render() {
     return (
       <Provider store={store}>
@@ -41,7 +46,11 @@ class App extends Component {
           <Router history={createHistory()}>
             <div>
               <Switch>
-                <Route path="/" component={SignIn} exact />
+                <Route
+                  path="/"
+                  component={store.getState().loggedIn ? Main : SignIn}
+                  exact
+                />
                 <Route path="/login" component={SignIn} />
                 <Route path="/home" component={SignIn} />
                 <Route path="/register" component={SignUp} />

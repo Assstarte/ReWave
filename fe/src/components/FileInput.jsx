@@ -22,9 +22,15 @@ class FileInput extends Component {
           method="post"
           encType="multipart/form-data"
         >
+          <h3>
+            {this.file_input_ref.current
+              ? this.file_input_ref.current.files[0].name
+              : "Please select file"}
+          </h3>
           <label htmlFor="track" className="file-input-label pulse">
             ReWave my track >
           </label>
+
           <input
             ref={this.file_input_ref}
             type="file"
@@ -33,6 +39,7 @@ class FileInput extends Component {
             className="file-input"
             onChange={e => this.onFileInputChange(e)}
           />
+
           <input
             type="submit"
             className="submit-form fill"
@@ -51,7 +58,7 @@ class FileInput extends Component {
     );
   }
 
-  handleUploadSingle(e) {
+  async handleUploadSingle(e) {
     e.preventDefault();
     //TODO: preloader
     let file = this.file_input_ref.current.files[0];
@@ -63,15 +70,22 @@ class FileInput extends Component {
       formData.append("track", file, file.name);
       formData.append("friendly_name", file.name);
       console.dir(formData);
-      fetch(`${PURE_BACKEND_HOST}upload/`, {
+      let rawData = await fetch(`${PURE_BACKEND_HOST}upload/`, {
         method: "PUT",
         body: formData,
         type: `cors`,
         credentials: `include`
-      })
-        .then(response => response.json())
-        .catch(error => console.error("Error:", error))
-        .then(response => console.log("Success:", JSON.stringify(response)));
+      });
+      let tagsPayload = await rawData.json();
+
+      if (tagsPayload.hasTags) {
+        // >> Init dipatch to REDUX informing the tags
+        console.log("Here are your tags:");
+        console.dir(tagsPayload.tags);
+      } else {
+        // >> Init dipatch to REDUX informing there are no tags
+        console.log("File has no tags!");
+      }
     } else {
       //TODO: Generate UI Friendly Error explaining that the file is not an audio
       console.error("Oops! Looks like this is not an audio file! ;(");

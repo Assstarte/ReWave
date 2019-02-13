@@ -6,7 +6,8 @@ import {
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   DISMISS_ERRORS,
-  DISMISS_SUCCESS
+  DISMISS_SUCCESS,
+  WHOAMI
 } from "../actions/types";
 
 const initialState = {
@@ -127,6 +128,30 @@ export default function(state = initialState, action) {
         request_error: false,
         request_done: false
       };
+
+    case WHOAMI:
+      console.dir(action.payload);
+      try {
+        server_response = JSON.parse(action.payload);
+      } catch (e) {
+        return {
+          ...state
+        };
+      }
+
+      if (server_response.session === "DENIED")
+        return {
+          ...state,
+          loggedIn: false,
+          user_id: null,
+          user_name: null
+        };
+      else
+        return {
+          loggedIn: true,
+          user_id: server_response.id,
+          user_name: server_response.login
+        };
 
     default:
       return state;
