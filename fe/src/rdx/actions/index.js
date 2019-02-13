@@ -1,4 +1,9 @@
-import { LOGIN_REQUEST, SIGNUP_REQUEST, WHOAMI } from "./types";
+import {
+  LOGIN_REQUEST,
+  SIGNUP_REQUEST,
+  WHOAMI,
+  PRELOAD_INFO_INIT
+} from "./types";
 
 export const AC_SIGNUP = ({ un, pw, em, fn }) => ({
   type: SIGNUP_REQUEST,
@@ -16,4 +21,9 @@ export const AC_LOGIN = ({ un, pw }) => ({
     un,
     pw
   }
+});
+
+export const AC_PRELOAD_FILE_INFO = tags => ({
+  type: PRELOAD_INFO_INIT,
+  payload: tags
 });

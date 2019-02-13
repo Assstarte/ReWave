@@ -5,7 +5,9 @@ import {
   PRELOAD_INFO_FAILURE
 } from "../actions/types";
 
-export function* do_file_info_saga(action) {}
+export function* do_file_info_saga(action) {
+  yield put({ type: PRELOAD_INFO_SUCCESS, payload: action.payload });
+}
 
 export default function* watch_file_info() {
   yield takeEvery(PRELOAD_INFO_INIT, do_file_info_saga);

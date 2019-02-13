@@ -3,6 +3,9 @@ import { ProgressBar } from "react-fetch-progressbar";
 
 import { PURE_BACKEND_HOST } from "../constants";
 
+import { AC_PRELOAD_FILE_INFO } from "../rdx/actions";
+import { connect } from "react-redux";
+
 class FileInput extends Component {
   constructor(props) {
     super(props);
@@ -80,6 +83,7 @@ class FileInput extends Component {
 
       if (tagsPayload.hasTags) {
         // >> Init dipatch to REDUX informing the tags
+        this.props.dispatch(this.props.AC_PRELOAD_FILE_INFO(tagsPayload.tags));
         console.log("Here are your tags:");
         console.dir(tagsPayload.tags);
       } else {
@@ -102,4 +106,25 @@ class FileInput extends Component {
   }
 }
 
-export default FileInput;
+const mapStateToProps = state => ({
+  title: state.file.title,
+  description: state.file.description,
+  artist: state.file.artist,
+  album: state.file.album,
+  year: state.file.year,
+  composer: state.file.composer,
+  cover: state.file.cover,
+  error: state.file.error
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch,
+    AC_PRELOAD_FILE_INFO
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FileInput);
