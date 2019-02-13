@@ -7,7 +7,10 @@ import {
   SIGNUP_FAILURE,
   SIGNUP_REQUEST,
   WHOAMI,
-  WHOAMI_REQUEST
+  WHOAMI_REQUEST,
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAILURE
 } from "../actions/types";
 import { gql } from "../../constants";
 
@@ -86,9 +89,31 @@ export function* do_whoami_saga() {
   yield put({ type: WHOAMI, payload: srv_payload });
 }
 
+export function* do_logout_saga() {
+  const GQL = `
+    query{
+      exec_logout{
+        erased
+      }
+    }
+  `;
+  let raw_payload;
+  try {
+    raw_payload = yield call([gql, gql.request], GQL);
+  } catch (err) {
+    yield put({ type: LOGOUT_FAILURE });
+    return;
+  }
+
+  yield put({
+    type: raw_payload.exec_logout.erased ? LOGOUT_SUCCESS : LOGOUT_FAILURE
+  });
+}
+
 export default function* watch_auth_saga() {
   console.log("IN WATCHER SAGA");
   yield takeLatest(LOGIN_REQUEST, do_login_saga);
   yield takeEvery(SIGNUP_REQUEST, do_signup_saga);
   yield takeLatest(WHOAMI_REQUEST, do_whoami_saga);
+  yield takeEvery(LOGOUT_REQUEST, do_logout_saga);
 }

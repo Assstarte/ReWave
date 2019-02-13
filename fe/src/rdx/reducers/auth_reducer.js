@@ -7,7 +7,10 @@ import {
   SIGNUP_FAILURE,
   DISMISS_ERRORS,
   DISMISS_SUCCESS,
-  WHOAMI
+  WHOAMI,
+  LOGOUT_REQUEST,
+  LOGOUT_FAILURE,
+  LOGOUT_SUCCESS
 } from "../actions/types";
 
 const initialState = {
@@ -61,6 +64,33 @@ export default function(state = initialState, action) {
       }
 
     case LOGIN_REQUEST_FAILURE:
+      return {
+        ...state,
+        request_pending: false,
+        request_error: true,
+        request_done: true
+      };
+
+    case LOGOUT_REQUEST:
+      return {
+        ...state,
+        request_pending: true,
+        request_error: false,
+        request_done: false
+      };
+
+    case LOGOUT_SUCCESS:
+      return {
+        ...state,
+        loggedIn: false,
+        request_pending: false,
+        request_error: false,
+        request_done: true,
+        user_id: null,
+        user_name: null
+      };
+
+    case LOGOUT_FAILURE:
       return {
         ...state,
         request_pending: false,

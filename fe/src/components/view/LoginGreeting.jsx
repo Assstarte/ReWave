@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Button } from "react-bootstrap";
+import { LOGOUT_REQUEST } from "../../rdx/actions/types";
 
 const LoginGreeting = props => (
   <div
@@ -11,6 +13,13 @@ const LoginGreeting = props => (
         ? `Logged in as >   ${props.user_name}`
         : "Not Authenticated"}
     </h4>
+    <Button
+      variant="outline-danger"
+      style={{ display: props.loggedIn ? "inline-block" : "none" }}
+      onClick={e => props.dispatch({ type: LOGOUT_REQUEST })}
+    >
+      Logout
+    </Button>
   </div>
 );
 
@@ -20,7 +29,13 @@ const mapStateToProps = state => ({
   user_name: state.auth.user_name
 });
 
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  };
+};
+
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
 )(LoginGreeting);

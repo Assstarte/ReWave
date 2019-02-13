@@ -140,6 +140,10 @@ const schema = buildSchema(`
       done: Boolean!
     }
 
+    type LogoutResponse{
+      erased: Boolean!
+    }
+
     type User{
       id: ID!
       login: String!
@@ -169,6 +173,7 @@ const schema = buildSchema(`
     type RootQuery{
       users: [User!]!
       exec_login(loginInput: LoginInput): LoginResult!
+      exec_logout: LogoutResponse!
     }
 
     type RootMutation{
@@ -243,11 +248,22 @@ async function users({}, { session }) {
   console.dir(response);
 }
 
+async function exec_logout({}, { session }) {
+  if (session.auth) {
+    // delete session object
+    console.log("======SESSION EXISTS. ERASING!==========");
+    session.auth = null;
+    console.dir(session.auth);
+    return { erased: true };
+  } else return { erased: false };
+}
+
 //=========================
 
 let rootGraph = {
   exec_login,
   exec_signup,
+  exec_logout,
   users
 };
 
