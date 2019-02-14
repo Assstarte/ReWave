@@ -55,22 +55,27 @@ export function* do_login_saga(action) {
 export function* do_signup_saga(action) {
   console.log("IN DO SAGA");
   console.dir(action.payload);
+
   const GQL = `
-  mutation{
-    exec_signup(userInput: {
-      login: "${action.payload.un}",
-      password: "${action.payload.pw}",
-      email: "${action.payload.em}",
-      full_name: "${action.payload.fn}"
-    }){
-      done
+    mutation signup($userInput: UserInput){
+      exec_signup(userInput: $userInput){
+        done
+      }
     }
-  }
-`;
+  `;
+
+  const variables = {
+    userInput: {
+      login: action.payload.un,
+      password: action.payload.pw,
+      email: action.payload.em,
+      full_name: action.payload.fn
+    }
+  };
 
   console.dir(`==============> GQL_QUERY ====> ${GQL}`);
   try {
-    const srv_payload = yield call([gql, gql.request], GQL);
+    const srv_payload = yield call([gql, gql.request], GQL, variables);
     yield put({ type: SIGNUP_SUCCESS, payload: srv_payload });
   } catch (err) {
     yield put({ type: SIGNUP_FAILURE, payload: err.message });
