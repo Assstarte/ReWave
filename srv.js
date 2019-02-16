@@ -60,11 +60,16 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
   console.dir(req.file);
   console.log(`======> TAGS:`);
   console.dir(tags);
-
+  //DELETING the RAW part to avoid conflicts
+  delete tags.raw;
+  if (tags.encodingTechnology) delete tags.encodingTechnology;
+  console.dir(`======> Tags W/O RAW`);
+  console.dir(tags);
   let coverFileName = null;
 
   //CASE WHEN WE HAVE ACTUAL TAGS
-  if (tags) {
+
+  if (tags && !isEmpty(tags)) {
     // GET cover image Uint8 arr from tags
 
     //We are trying to obtain & save cover image from mp3 meta if such exists
@@ -87,7 +92,11 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
       description: req.body.description ? req.body.description : "N/A",
       avg_rating: 0,
       file_name: req.file.filename,
-      friendly_file_name: req.body.friendly_name,
+      //Note: Cut off the .mp3 part from the name
+      friendly_file_name: req.body.friendly_name.substr(
+        0,
+        req.body.friendly_name.indexOf(".mp3")
+      ),
       cover_name: coverFileName || "nocover.jpg"
     });
 
@@ -96,7 +105,14 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
     await deployTrackTagsToDb(track.dataValues.id, tags);
 
     res.status(201);
-    res.end(JSON.stringify({ hasTags: true, cover: track.cover_name, tags }));
+    res.end(
+      JSON.stringify({
+        hasTags: true,
+        name: track.friendly_file_name,
+        cover: track.cover_name,
+        tags
+      })
+    );
   }
 
   //IF THERE ARE NO TAGS AT ALL --->
@@ -109,7 +125,11 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
       description: req.body.description ? req.body.description : "N/A",
       avg_rating: 0,
       file_name: req.file.filename,
-      friendly_file_name: req.body.friendly_name,
+      //Note: Cut off the .mp3 part from the name
+      friendly_file_name: req.body.friendly_name.substr(
+        0,
+        req.body.friendly_name.indexOf(".mp3")
+      ),
       cover_name: coverFileName || "nocover.jpg"
     });
 
@@ -119,7 +139,8 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
 
     res.end(
       JSON.stringify({
-        hasTags: false
+        hasTags: false,
+        name: track.friendly_file_name
       })
     );
   }
@@ -397,6 +418,14 @@ function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min; //Включаючи мінімум та максимум
+}
+
+//Check if object is empty (for tags check mainly)
+function isEmpty(obj) {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) return false;
+  }
+  return true;
 }
 
 async function deployTrackTagsToDb(track_id, tags) {

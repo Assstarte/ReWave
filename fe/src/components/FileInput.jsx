@@ -4,12 +4,15 @@ import { ProgressBar } from "react-fetch-progressbar";
 import { PURE_BACKEND_HOST } from "../constants";
 
 import { AC_PRELOAD_FILE_INFO } from "../rdx/actions";
+import { SHOW_TAGS_FORM } from "../rdx/actions/types";
 import { connect } from "react-redux";
 
 import { Image } from "react-bootstrap";
 
 import FileInfo from "./FileInfo";
 import Header from "./Header";
+import AlertSuccessForwardTo from "./bootstrap/AlertSuccessForwardTo";
+import AlertErrorDismissable from "./bootstrap/AlertErrorDismissable";
 
 class FileInput extends Component {
   constructor(props) {
@@ -25,6 +28,24 @@ class FileInput extends Component {
     return (
       <React.Fragment>
         <Header />
+        <div className="tc">
+          <AlertErrorDismissable
+            type="danger"
+            heading="Lamentably!"
+            message="Error occurred"
+            display={this.props.error ? true : false}
+          />
+
+          <AlertSuccessForwardTo
+            type="success"
+            heading="Success!"
+            message={`Uploaded Successfully!`}
+            btnText="OK >"
+            path="/upload"
+            display={this.props.done && !this.props.error ? true : false}
+            history={this.props.history}
+          />
+        </div>
         <form
           onSubmit={e => this.handleUploadSingle(e)}
           action="/upload"
@@ -75,7 +96,7 @@ class FileInput extends Component {
         />
 
         <FileInfo
-          shown={this.state.showTagsFom}
+          shown={this.props.showTagsForm}
           title={this.props.title ? this.props.title : ""}
           artist={this.props.artist ? this.props.artist : ""}
           album={this.props.album ? this.props.album : ""}
@@ -96,12 +117,20 @@ class FileInput extends Component {
       formData.append("track", file, file.name);
       formData.append("friendly_name", file.name);
       console.dir(formData);
-      let rawData = await fetch(`${PURE_BACKEND_HOST}upload/`, {
-        method: "PUT",
-        body: formData,
-        type: `cors`,
-        credentials: `include`
-      });
+      let rawData;
+
+      try {
+        rawData = await fetch(`${PURE_BACKEND_HOST}upload/`, {
+          method: "PUT",
+          body: formData,
+          type: `cors`,
+          credentials: `include`
+        });
+      } catch (e) {
+        //Add proper handling
+        throw new Error(e.message);
+      }
+
       let tagsPayload = await rawData.json();
 
       console.error("COVER");
@@ -122,7 +151,14 @@ class FileInput extends Component {
       } else {
         // >> Init dipatch to REDUX informing there are no tags
         console.log("File has no tags!");
+        this.props.dispatch(
+          this.props.AC_PRELOAD_FILE_INFO(null, null, tagsPayload.name)
+        );
       }
+
+      //ASK Edit tags or no?
+      let selection = window.confirm("Edit Track MP3 Info?");
+      if (selection) this.props.dispatch({ type: SHOW_TAGS_FORM });
     } else {
       //TODO: Generate UI Friendly Error explaining that the file is not an audio
       console.error("Oops! Looks like this is not an audio file! ;(");
@@ -146,7 +182,7 @@ const mapStateToProps = state => ({
   year: state.file.year,
   composer: state.file.composer,
   cover: state.file.cover,
-  showTagsForm: state.file.showTagsForm,
+  showTagsForm: state.file.show_tags_form,
   error: state.file.request_error,
   done: state.file.request_done,
   pending: state.file.request_pending

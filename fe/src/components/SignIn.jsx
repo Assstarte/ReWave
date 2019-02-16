@@ -39,6 +39,7 @@ class SignIn extends Component {
               message={`Welcome, ${this.props.user_name}`}
               btnText="Dashboard >"
               path="/dash"
+              redirect
               display={this.props.done && !this.props.error ? true : false}
               history={this.props.history}
             />

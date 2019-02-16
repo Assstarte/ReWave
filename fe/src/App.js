@@ -52,7 +52,10 @@ class App extends Component {
                   exact
                 />
                 <Route path="/login" component={SignIn} />
-                <Route path="/home" component={SignIn} />
+                <Route
+                  path="/home"
+                  component={store.getState().auth.loggedIn ? Main : SignIn}
+                />
                 <Route path="/register" component={SignUp} />
                 <Route path="/upload" component={Upload} />
                 <Route path="/dash" component={Main} />
@@ -67,7 +70,8 @@ class App extends Component {
 
 //Persisting Redux State
 store.subscribe(() => {
-  localStorage.setItem("reduxState", JSON.stringify(store.getState()));
+  let wholeState = store.getState();
+  localStorage.setItem("reduxAuthState", JSON.stringify(wholeState.auth));
 });
 
 export default App;

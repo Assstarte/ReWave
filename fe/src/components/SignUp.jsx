@@ -41,6 +41,8 @@ class SignUp extends Component {
               message="Account Created!"
               display={this.props.done && !this.props.error ? true : false}
               btnText="Login"
+              path="/login"
+              redirect
               history={this.props.history}
             />
           </div>

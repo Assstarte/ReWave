@@ -85,7 +85,7 @@ export default function(state = initialState, action) {
         loggedIn: false,
         request_pending: false,
         request_error: false,
-        request_done: true,
+        request_done: false,
         user_id: null,
         user_name: null
       };

@@ -47,7 +47,7 @@ class AlertSuccessForwardTo extends React.Component {
 
   forwardTo(path) {
     store.dispatch({ type: DISMISS_SUCCESS });
-    this.props.history.push(path);
+    if (this.props.redirect) this.props.history.push(path);
   }
 }
 

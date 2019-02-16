@@ -1,4 +1,10 @@
-import { PRELOAD_INFO_INIT, PRELOAD_INFO_SUCCESS } from "../actions/types";
+import {
+  PRELOAD_INFO_INIT,
+  PRELOAD_INFO_SUCCESS,
+  SHOW_TAGS_FORM,
+  DISMISS_ERRORS,
+  DISMISS_SUCCESS
+} from "../actions/types";
 
 const initialState = {
   request_pending: true,
@@ -9,13 +15,22 @@ const initialState = {
   album: null,
   year: null,
   composer: null,
-  cover: null
+  cover: null,
+  show_tags_form: false
 };
 
 export default function(state = initialState, action) {
   let tags = action.payload;
   switch (action.type) {
+    case PRELOAD_INFO_INIT:
+      return {
+        ...state,
+        request_pending: true,
+        request_done: false,
+        request_error: false
+      };
     case PRELOAD_INFO_SUCCESS:
+      console.dir(tags);
       return {
         ...state,
         title: tags.title || null,
@@ -24,7 +39,32 @@ export default function(state = initialState, action) {
         year: tags.year || null,
         composer: tags.composer || null,
         cover: action.cover ? action.cover : false,
-        error: false
+        request_error: false,
+        request_pending: false,
+        request_done: true,
+        show_tags_form: false
+      };
+
+    case SHOW_TAGS_FORM:
+      return {
+        ...state,
+        show_tags_form: true
+      };
+
+    case DISMISS_ERRORS:
+      return {
+        ...state,
+        request_done: false,
+        request_pending: false,
+        request_error: false
+      };
+
+    case DISMISS_SUCCESS:
+      return {
+        ...state,
+        request_done: false,
+        request_pending: false,
+        request_error: false
       };
 
     default:

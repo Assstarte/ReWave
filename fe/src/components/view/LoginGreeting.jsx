@@ -16,7 +16,9 @@ const LoginGreeting = props => (
     <Button
       variant="outline-danger"
       style={{ display: props.loggedIn ? "inline-block" : "none" }}
-      onClick={e => props.dispatch({ type: LOGOUT_REQUEST })}
+      onClick={e => {
+        props.dispatch({ type: LOGOUT_REQUEST });
+      }}
     >
       Logout
     </Button>

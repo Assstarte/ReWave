@@ -4,7 +4,11 @@ class FileInfo extends Component {
   render() {
     return (
       <React.Fragment>
-        <form className="measure center" onSubmit={e => this.editTrackTags(e)}>
+        <form
+          className="measure center"
+          onSubmit={e => this.editTrackTags(e)}
+          style={{ display: this.props.shown ? "block" : "none" }}
+        >
           <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
             <legend className="f4 fw6 ph0 mh0">Track Information</legend>
             <div className="mt3">
@@ -17,7 +21,7 @@ class FileInfo extends Component {
                 name="title"
                 id="title"
                 ref={this._titleRef}
-                value={this.props.title}
+                placeholder={this.props.title}
               />
             </div>
             <div className="mv3">
@@ -30,7 +34,7 @@ class FileInfo extends Component {
                 name="artist"
                 id="artist"
                 ref={this._artistRef}
-                value={this.props.artist}
+                placeholder={this.props.artist}
               />
             </div>
 
@@ -44,7 +48,7 @@ class FileInfo extends Component {
                 name="album"
                 id="album"
                 ref={this._albumRef}
-                value={this.props.album}
+                placeholder={this.props.album}
               />
             </div>
           </fieldset>

@@ -105,6 +105,7 @@ export function* do_logout_saga() {
   let raw_payload;
   try {
     raw_payload = yield call([gql, gql.request], GQL);
+    yield put({ type: LOGOUT_SUCCESS });
   } catch (err) {
     yield put({ type: LOGOUT_FAILURE });
     return;
