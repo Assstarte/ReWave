@@ -47,6 +47,11 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
   console.log("SESS");
   console.dir(req.session);
 
+  if (!req.session.auth) {
+    res.status(400);
+    res.end(JSON.stringify({ error: "Not authenticated" }));
+  }
+
   //Retreiving the actual session object
   let session_auth_data = JSON.parse(req.session.auth);
   //Extracting User from DB
@@ -181,6 +186,15 @@ const schema = buildSchema(`
       createdAt: String!
     }
 
+    type Tags{
+      title: String
+      artist: String
+      album: String
+      year: Int
+      composer: String
+      imageType: String
+    }
+
     type LoginResult{
       success: Success!
       userdata: User!
@@ -198,10 +212,27 @@ const schema = buildSchema(`
       password: String!
     }
 
+    type Track {
+      id: ID!
+      public: Boolean!
+      avg_rating: Float!
+      file_name: String!
+      friendly_file_name: String!
+      cover_name: String!
+      owner_id: ID
+      tags: Tags
+    }
+
+    type TrackArray {
+      tracks: [Track!]!
+    }
+
     type RootQuery{
       users: [User!]!
       exec_login(loginInput: LoginInput): LoginResult!
       exec_logout: LogoutResponse!
+      exec_get_track_by_id(id: ID!): Track!
+      exec_get_multiple_tracks: TrackArray!
     }
 
     type RootMutation{
@@ -286,13 +317,85 @@ async function exec_logout({}, { session }) {
   } else return { erased: false };
 }
 
+async function exec_get_track_by_id({ id }, { session }) {
+  let track = await Track.findByPk(id);
+  if (!track) throw new Error("No such Track");
+  let tags = await track.getTag_collection();
+
+  let requester = session.auth.id;
+
+  if (!track.public && requester !== track.userId)
+    throw new Error("You are not authorized to query this track!");
+
+  return tags
+    ? {
+        id: track.id,
+        public: track.public,
+        avg_rating: track.avg_rating,
+        file_name: track.file_name,
+        friendly_file_name: track.friendly_file_name,
+        cover_name: track.cover_name,
+        owner_id: track.userId,
+        tags: {
+          title: tags.title,
+          artist: tags.artist,
+          album: tags.album,
+          year: tags.year,
+          composer: tags.composer,
+          imageType: tags.imageType
+        }
+      }
+    : {
+        id: track.id,
+        public: track.public,
+        avg_rating: track.avg_rating,
+        file_name: track.file_name,
+        friendly_file_name: track.friendly_file_name,
+        cover_name: track.cover_name,
+        owner_id: track.userId
+      };
+}
+
+async function exec_get_multiple_tracks({}, { session }) {
+  let userId = JSON.parse(session.auth).id;
+
+  //let auth_sess = JSON.parse(session.auth);
+
+  let arr = await Track.findAll({
+    include: [
+      {
+        model: TagCollection
+      }
+    ],
+
+    where: {
+      userId
+    }
+  });
+
+  //console.dir(await arr[0].getTag_collections());
+
+  let tagsArr = await Promise.all(arr.map(track => track.getTag_collection()));
+
+  //await arr.map((track, i) => (track.tags = tagsArr[i]));
+
+  await arr.map((track, i) => (track.tags = tagsArr[i]));
+
+  // for (let track of arr) {
+  //   console.dir(track.tags);
+  // }
+  return { tracks: arr };
+}
+
 //=========================
 
 let rootGraph = {
   exec_login,
   exec_signup,
   exec_logout,
-  users
+  users,
+  exec_get_track_by_id,
+  exec_get_multiple_tracks
 };
 
 srv.use(
@@ -384,8 +487,11 @@ const TagCollection = sequelize.define("tag_collections", {
 //===============================
 
 //==========RELATIONSHIPS========
-Track.belongsToMany(TagCollection, { through: "Track_Tags" });
-TagCollection.belongsToMany(Track, { through: "Track_Tags" });
+// Track.belongsToMany(TagCollection, { through: "Track_Tags" });
+// TagCollection.belongsToMany(Track, { through: "Track_Tags" });
+
+TagCollection.belongsTo(Track);
+Track.hasOne(TagCollection);
 
 User.hasMany(Track);
 Track.belongsTo(User, { as: "track_owner" });
@@ -444,7 +550,8 @@ async function deployTrackTagsToDb(track_id, tags) {
     imageType: tags.image ? tags.image.mime : null
   });
 
-  let createdEntity = await track.addTag_collection([tag_collection]);
+  console.dir(track.__proto__);
+  let createdEntity = await tag_collection.setTrack(track);
 }
 
 srv.listen("3030", () => {
