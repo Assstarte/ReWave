@@ -6,6 +6,11 @@ import { PURE_BACKEND_HOST } from "../constants";
 import { AC_PRELOAD_FILE_INFO } from "../rdx/actions";
 import { connect } from "react-redux";
 
+import { Image } from "react-bootstrap";
+
+import FileInfo from "./FileInfo";
+import Header from "./Header";
+
 class FileInput extends Component {
   constructor(props) {
     super(props);
@@ -19,12 +24,23 @@ class FileInput extends Component {
   render() {
     return (
       <React.Fragment>
+        <Header />
         <form
           onSubmit={e => this.handleUploadSingle(e)}
           action="/upload"
           method="post"
           encType="multipart/form-data"
+          style={{ marginTop: `30px` }}
         >
+          <Image
+            src={
+              this.props.cover
+                ? `${PURE_BACKEND_HOST}/covers/${this.props.cover}`
+                : `${PURE_BACKEND_HOST}/covers/nocover.jpg`
+            }
+            roundedCircle
+            style={{ height: `100px`, width: `100px` }}
+          />
           <h3>
             {this.file_input_ref.current
               ? this.file_input_ref.current.files[0].name
@@ -57,6 +73,13 @@ class FileInput extends Component {
           className="fetch-progress-bar"
           style={{ backgroundColor: "black", height: "20px", top: `50%` }}
         />
+
+        <FileInfo
+          shown={this.state.showTagsFom}
+          title={this.props.title ? this.props.title : ""}
+          artist={this.props.artist ? this.props.artist : ""}
+          album={this.props.album ? this.props.album : ""}
+        />
       </React.Fragment>
     );
   }
@@ -81,11 +104,21 @@ class FileInput extends Component {
       });
       let tagsPayload = await rawData.json();
 
+      console.error("COVER");
+      console.dir(tagsPayload.cover);
+
       if (tagsPayload.hasTags) {
         // >> Init dipatch to REDUX informing the tags
-        this.props.dispatch(this.props.AC_PRELOAD_FILE_INFO(tagsPayload.tags));
-        console.log("Here are your tags:");
-        console.dir(tagsPayload.tags);
+        tagsPayload.cover
+          ? this.props.dispatch(
+              this.props.AC_PRELOAD_FILE_INFO(
+                tagsPayload.tags,
+                tagsPayload.cover
+              )
+            )
+          : this.props.dispatch(
+              this.props.AC_PRELOAD_FILE_INFO(tagsPayload.tags)
+            );
       } else {
         // >> Init dipatch to REDUX informing there are no tags
         console.log("File has no tags!");
@@ -108,13 +141,15 @@ class FileInput extends Component {
 
 const mapStateToProps = state => ({
   title: state.file.title,
-  description: state.file.description,
   artist: state.file.artist,
   album: state.file.album,
   year: state.file.year,
   composer: state.file.composer,
   cover: state.file.cover,
-  error: state.file.error
+  showTagsForm: state.file.showTagsForm,
+  error: state.file.request_error,
+  done: state.file.request_done,
+  pending: state.file.request_pending
 });
 
 const mapDispatchToProps = dispatch => {

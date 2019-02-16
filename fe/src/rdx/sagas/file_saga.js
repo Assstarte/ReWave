@@ -6,7 +6,11 @@ import {
 } from "../actions/types";
 
 export function* do_file_info_saga(action) {
-  yield put({ type: PRELOAD_INFO_SUCCESS, payload: action.payload });
+  yield put({
+    type: PRELOAD_INFO_SUCCESS,
+    payload: action.payload,
+    cover: action.cover
+  });
 }
 
 export default function* watch_file_info() {

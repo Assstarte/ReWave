@@ -16,6 +16,8 @@ srv.use(
   })
 );
 
+srv.use(express.static("assets"));
+
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 
@@ -94,7 +96,7 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
     await deployTrackTagsToDb(track.dataValues.id, tags);
 
     res.status(201);
-    res.end(JSON.stringify({ hasTags: true, tags }));
+    res.end(JSON.stringify({ hasTags: true, cover: track.cover_name, tags }));
   }
 
   //IF THERE ARE NO TAGS AT ALL --->
@@ -114,7 +116,12 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
     await uploader.addTrack([track]);
 
     res.status(201);
-    res.end(JSON.stringify({ hasTags: false }));
+
+    res.end(
+      JSON.stringify({
+        hasTags: false
+      })
+    );
   }
 });
 

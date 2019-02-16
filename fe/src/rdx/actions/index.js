@@ -23,7 +23,8 @@ export const AC_LOGIN = ({ un, pw }) => ({
   }
 });
 
-export const AC_PRELOAD_FILE_INFO = tags => ({
+export const AC_PRELOAD_FILE_INFO = (tags, cover_path) => ({
   type: PRELOAD_INFO_INIT,
-  payload: tags
+  payload: tags,
+  cover: cover_path
 });
