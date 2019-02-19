@@ -457,23 +457,40 @@ const User = sequelize.define("users", {
   account_type: Sequelize.ENUM("USER", "ARTIST", "ADMIN")
 });
 
-const Track = sequelize.define("tracks", {
-  type: Sequelize.ENUM("UPLOAD", "PUBLICATION"),
-  public: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
-  description: Sequelize.TEXT,
-  avg_rating: { type: Sequelize.FLOAT, defaultValue: 0.0 },
-  file_name: { type: Sequelize.STRING, allowNull: false },
-  friendly_file_name: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    defaultValue: "Untitled"
+const Track = sequelize.define(
+  "tracks",
+  {
+    type: Sequelize.ENUM("UPLOAD", "PUBLICATION"),
+    public: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
+    description: Sequelize.TEXT,
+    avg_rating: { type: Sequelize.FLOAT, defaultValue: 0.0 },
+    file_name: { type: Sequelize.STRING, allowNull: false },
+    friendly_file_name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      defaultValue: "Untitled"
+    },
+    cover_name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      defaultValue: "nocover.jpg"
+    }
   },
-  cover_name: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    defaultValue: "nocover.jpg"
+  {
+    getterMethods: {
+      async tags() {
+        let instance = await this.getTag_collection();
+        return instance.dataValues;
+      }
+    },
+
+    setterMethods: {
+      async tags(tagsObj) {
+        await deployTrackTagsToDb(this.id, tagsObj);
+      }
+    }
   }
-});
+);
 
 const TagCollection = sequelize.define("tag_collections", {
   title: Sequelize.STRING,
@@ -551,9 +568,16 @@ async function deployTrackTagsToDb(track_id, tags) {
   });
 
   console.dir(track.__proto__);
-  let createdEntity = await tag_collection.setTrack(track);
+  return await tag_collection.setTrack(track);
+}
+
+async function TEST_BLOCK() {
+  let item1 = await Track.findByPk(1);
+  let tagsOfItem1 = await item1.tags;
+  console.dir(tagsOfItem1);
 }
 
 srv.listen("3030", () => {
   console.log("Backend API is on port 3030");
+  TEST_BLOCK();
 });
