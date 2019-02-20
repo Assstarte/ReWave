@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Dashboard from "./Dashboard";
+import TrackPanel from "./TrackPanel";
 
 import { Container, Row, Col } from "react-bootstrap";
 
@@ -15,7 +16,9 @@ class Main extends Component {
             <Col xs={2}>
               <Dashboard />
             </Col>
-            <Col />
+            <Col xs={10}>
+              <TrackPanel />
+            </Col>
           </Row>
         </Container>
         <Footer />

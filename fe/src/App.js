@@ -24,6 +24,7 @@ import Main from "./components/Main";
 //==============
 import { progressBarFetch, setOriginalFetch } from "react-fetch-progressbar";
 import { WHOAMI_REQUEST } from "./rdx/actions/types";
+import TrackPanel from "./components/TrackPanel";
 
 // Let react-fetch-progressbar know what the original fetch is.
 setOriginalFetch(window.fetch);
@@ -59,6 +60,7 @@ class App extends Component {
                 <Route path="/register" component={SignUp} />
                 <Route path="/upload" component={Upload} />
                 <Route path="/dash" component={Main} />
+                <Route path="/test" component={TrackPanel} />
               </Switch>
             </div>
           </Router>
