@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Dashboard from "./Dashboard";
 import TrackPanel from "./TrackPanel";
+import Player from "./Player";
 
 import { Container, Row, Col } from "react-bootstrap";
 
@@ -21,7 +22,7 @@ class Main extends Component {
             </Col>
           </Row>
         </Container>
-        <Footer />
+        <Player />
       </React.Fragment>
     );
   }
