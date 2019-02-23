@@ -13,7 +13,7 @@ class Player extends Component {
       <>
         <div className="player-info">
           <img
-            src="http://localhost:3030/covers/376062__NOW%20EASY%20FT.%20AIKKO_RIPLOVE.png"
+            src="http://localhost:3030/covers/581164__NOW%20EASY%20FT.%20AIKKO_RIPLOVE.png"
             alt=""
             style={{
               width: `105px`,
@@ -26,7 +26,7 @@ class Player extends Component {
         </div>
         <ReactAudioPlayer
           className="player"
-          src="http://localhost:3030/1ba347c346f16a512e239d8b80259191"
+          src="http://localhost:3030/05225cb34524fc29c83d85782ca1e4d8"
           autoPlay
           controls
           ref={element => {

@@ -30,7 +30,7 @@ class Track extends Component {
 
           <Card.Body>
             <img
-              src="http://localhost:3030/covers/376062__NOW%20EASY%20FT.%20AIKKO_RIPLOVE.png"
+              src="http://localhost:3030/covers/581164__NOW%20EASY%20FT.%20AIKKO_RIPLOVE.png"
               alt="cover"
               style={{ width: `75px`, height: `75px`, display: `inline` }}
             />

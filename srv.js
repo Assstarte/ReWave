@@ -215,12 +215,14 @@ const schema = buildSchema(`
     type Track {
       id: ID!
       public: Boolean!
+      title: String!
+      artist: String!
       avg_rating: Float!
       file_name: String!
       friendly_file_name: String!
       cover_name: String!
       owner_id: ID
-      tags: Tags
+      tagCollection: Tags
     }
 
     type TrackArray {
@@ -331,6 +333,8 @@ async function exec_get_track_by_id({ id }, { session }) {
     ? {
         id: track.id,
         public: track.public,
+        title: track.title, //custom Sequelize getter
+        artist: track.artist, //custom Sequelize getter
         avg_rating: track.avg_rating,
         file_name: track.file_name,
         friendly_file_name: track.friendly_file_name,
@@ -348,6 +352,8 @@ async function exec_get_track_by_id({ id }, { session }) {
     : {
         id: track.id,
         public: track.public,
+        title: track.title, //custom Sequelize getter
+        artist: track.artist, //custom Sequelize getter
         avg_rating: track.avg_rating,
         file_name: track.file_name,
         friendly_file_name: track.friendly_file_name,
@@ -362,12 +368,6 @@ async function exec_get_multiple_tracks({}, { session }) {
   //let auth_sess = JSON.parse(session.auth);
 
   let arr = await Track.findAll({
-    include: [
-      {
-        model: TagCollection
-      }
-    ],
-
     where: {
       userId
     }
@@ -375,11 +375,13 @@ async function exec_get_multiple_tracks({}, { session }) {
 
   //console.dir(await arr[0].getTag_collections());
 
-  let tagsArr = await Promise.all(arr.map(track => track.getTag_collection()));
+  // let tagsArr = await Promise.all(arr.map(track => track.getTag_collection()));
 
-  //await arr.map((track, i) => (track.tags = tagsArr[i]));
+  // //await arr.map((track, i) => (track.tags = tagsArr[i]));
 
-  await arr.map((track, i) => (track.tags = tagsArr[i]));
+  // await arr.map((track, i) => (track.tags = tagsArr[i]));
+
+  await arr.map((track) => track.tagCollection = track.tags);
 
   // for (let track of arr) {
   //   console.dir(track.tags);
@@ -473,7 +475,32 @@ const Track = sequelize.define("tracks", {
     allowNull: false,
     defaultValue: "nocover.jpg"
   }
-});
+},
+{
+  getterMethods: {
+    async tags() {
+      let instance = await this.getTag_collection();
+      return instance ? instance.dataValues : null;
+    },
+
+    async title(){
+      let name = await this.dataValues.friendly_file_name;
+      return name.substr(name.indexOf("-") + 1, name.length);
+    },
+
+    async artist(){
+      let name = await this.dataValues.friendly_file_name;
+      return name.substr(0, name.indexOf("-"));
+    }
+  },
+  
+  setterMethods: {
+    async tags(tagsObj) {
+      await deployTrackTagsToDb(this.id, tagsObj);
+    }
+  }
+}
+);
 
 const TagCollection = sequelize.define("tag_collections", {
   title: Sequelize.STRING,
