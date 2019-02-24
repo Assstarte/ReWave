@@ -234,7 +234,7 @@ const schema = buildSchema(`
       exec_login(loginInput: LoginInput): LoginResult!
       exec_logout: LogoutResponse!
       exec_get_track_by_id(id: ID!): Track!
-      exec_get_multiple_tracks: TrackArray!
+      exec_get_own_multiple_tracks: TrackArray!
     }
 
     type RootMutation{
@@ -362,8 +362,9 @@ async function exec_get_track_by_id({ id }, { session }) {
       };
 }
 
-async function exec_get_multiple_tracks({}, { session }) {
-  let userId = JSON.parse(session.auth).id;
+async function exec_get_own_multiple_tracks({}, { session }) {
+  let userId = session.auth ? JSON.parse(session.auth).id : null;
+  if(!userId) throw new Error("Not Authenticated!");
 
   //let auth_sess = JSON.parse(session.auth);
 
@@ -397,7 +398,7 @@ let rootGraph = {
   exec_logout,
   users,
   exec_get_track_by_id,
-  exec_get_multiple_tracks
+  exec_get_own_multiple_tracks
 };
 
 srv.use(
