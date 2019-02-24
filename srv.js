@@ -322,9 +322,9 @@ async function exec_logout({}, { session }) {
 async function exec_get_track_by_id({ id }, { session }) {
   let track = await Track.findByPk(id);
   if (!track) throw new Error("No such Track");
-  let tags = await track.getTag_collection();
+  let tags = await track.tags;
 
-  let requester = session.auth.id;
+  let requester = session.auth ? session.auth.id : null;
 
   if (!track.public && requester !== track.userId)
     throw new Error("You are not authorized to query this track!");
@@ -340,7 +340,7 @@ async function exec_get_track_by_id({ id }, { session }) {
         friendly_file_name: track.friendly_file_name,
         cover_name: track.cover_name,
         owner_id: track.userId,
-        tags: {
+        tagCollection: {
           title: tags.title,
           artist: tags.artist,
           album: tags.album,
