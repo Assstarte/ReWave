@@ -27,7 +27,11 @@ class TrackPanel extends Component {
         artist: "TEST",
         cover_name:
           "https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
-      }
+      },
+      {},
+      {},
+      {},
+      {}
     ];
     return (
       <>

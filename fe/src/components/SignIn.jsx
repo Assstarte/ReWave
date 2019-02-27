@@ -114,7 +114,7 @@ class SignIn extends Component {
             </div>
           </form>
         </main>
-        <Footer />
+        
       </div>
     );
   }
