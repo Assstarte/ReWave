@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import ReactAudioPlayer from "react-audio-player";
 import Track from "./Track";
+import {REQUEST_ALL_UPLOADED_TRACKS} from "../rdx/actions/types";
+import {connect} from "react-redux";
 
 class TrackPanel extends Component {
   constructor(props) {
@@ -8,35 +10,15 @@ class TrackPanel extends Component {
     this.player = React.createRef();
   }
 
+  componentDidMount(){
+    this.props.dispatch({type: REQUEST_ALL_UPLOADED_TRACKS});
+  }
+
   render() {
-    let testArr = [
-      {
-        title: "TEST",
-        artist: "TEST",
-        cover_name:
-          "https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
-      },
-      {
-        title: "TEST",
-        artist: "TEST",
-        cover_name:
-          "https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
-      },
-      {
-        title: "TEST",
-        artist: "TEST",
-        cover_name:
-          "https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
-      },
-      {},
-      {},
-      {},
-      {}
-    ];
     return (
       <>
         <div className="dash-panel">
-          {testArr.map(track => (
+          {this.props.tracks.map(track => (
             <Track data={track} />
           ))}
         </div>
@@ -45,4 +27,18 @@ class TrackPanel extends Component {
   }
 }
 
-export default TrackPanel;
+const mapStateToProps = state => ({
+   tracks: state.data.tracks,
+   currentTrackPlayBack: state.player.currentTrackPlayBack
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanel);

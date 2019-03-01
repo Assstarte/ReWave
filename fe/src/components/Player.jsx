@@ -1,11 +1,45 @@
 import React, { Component } from "react";
 import ReactAudioPlayer from "react-audio-player";
 import Track from "./Track";
+import { PURE_BACKEND_HOST } from "../constants";
+import {connect} from "react-redux";
+import { STOP_PLAYER, PLAY_PLAYER } from "../rdx/actions/types";
 
 class Player extends Component {
   constructor(props) {
     super(props);
     this.player = React.createRef();
+
+    this.state = {
+      isSeeking: false
+    }
+
+    //Bind
+    this.handlePause.bind(this);
+    this.handlePlay.bind(this);
+    this.handleSeek.bind(this);
+    this.handleEndSeek.bind(this);
+  }
+
+  componentDidMount(){
+    console.dir(this.player.audioEl);
+    this.player.audioEl.onpause = () => this.handlePause();
+    this.player.audioEl.onplay = () => this.handlePlay();
+    this.player.audioEl.onseeking = () => this.handleSeek();
+    this.player.audioEl.onseeked= () => this.handleEndSeek();
+  }
+
+  componentDidUpdate(){
+    //If player is seeking through track - do nothing, cause it can cause infinite loops breakdown
+    if(!this.state.isSeeking){
+      try{
+        this.props.isPlaying && this.props.currentTrackId ? this.player.audioEl.play() : this.player.audioEl.pause();
+      } catch(e){
+        console.error(e.message);
+      }
+    }
+    
+    
   }
 
   render() {
@@ -26,7 +60,7 @@ class Player extends Component {
         </div>
         <ReactAudioPlayer
           className="player"
-          src="http://localhost:3030/05225cb34524fc29c83d85782ca1e4d8"
+          src={`${this.props.currentTrackPlayback}`}
           autoPlay
           controls
           ref={element => {
@@ -36,6 +70,49 @@ class Player extends Component {
       </>
     );
   }
+
+  handlePause(){
+    //Additional check to avoid infinite loops w/ high requests
+    if(this.props.isPlaying) this.props.dispatch({
+      type: STOP_PLAYER
+    })
+  }
+
+  handlePlay(){
+    //Additional check to avoid infinite loops w/ high requests
+    if(!this.props.isPlaying) this.props.dispatch({
+      type: PLAY_PLAYER
+    });
+  }
+
+  handleSeek(){
+    //This is handled to avoid infinite loops w/ high requests as well
+    this.setState({
+      isSeeking: true
+    })
+  }
+
+  handleEndSeek(){
+    this.setState({
+      isSeeking: false
+    })
+  }
 }
 
-export default Player;
+const mapStateToProps = state => ({
+  tracks: state.data.tracks,
+  currentTrackPlayback: state.player.currentTrackPlayback,
+  currentTrackId: state.player.currentTrackId,
+  isPlaying: state.player.isPlaying
+});
+
+const mapDispatchToProps = dispatch => {
+ return {
+   dispatch
+ };
+};
+
+export default connect(
+ mapStateToProps,
+ mapDispatchToProps
+)(Player);
