@@ -83,7 +83,7 @@ export function* do_signup_saga(action) {
 }
 
 export function* do_whoami_saga() {
-  const raw_payload = yield call(fetch, "http://localhost:3030/whoami", {
+  const raw_payload = yield call(fetch, "/whoami", {
     credentials: `include`,
     mode: `cors`
   });

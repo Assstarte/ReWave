@@ -120,7 +120,7 @@ class FileInput extends Component {
       let rawData;
 
       try {
-        rawData = await fetch(`${PURE_BACKEND_HOST}upload/`, {
+        rawData = await fetch(`/upload`, {
           method: "PUT",
           body: formData,
           type: `cors`,

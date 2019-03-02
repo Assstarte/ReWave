@@ -6,7 +6,8 @@ import {
     currentTrackPlayback: "",
     currentTrackCover: "",
     isPlaying: false,
-    currentTrackId: null
+    currentTrackId: null,
+    isPaused: false
   };
   
   export default function(state = initialState, action) {
@@ -18,19 +19,22 @@ import {
         currentTrackPlayback: action.payload.playback,
         currentTrackCover: action.payload.cover,
         currentTrackId: action.payload.id,
-        isPlaying: true
+        isPlaying: true,
+        isPaused: false
       }
 
     case STOP_PLAYER:
       return{
           ...state,
-          isPlaying: false
+          isPlaying: false,
+          isPaused: true
       }
 
     case PLAY_PLAYER:
       return{
           ...state,
-          isPlaying: true
+          isPlaying: true,
+          isPaused: false
       }
   
       default:

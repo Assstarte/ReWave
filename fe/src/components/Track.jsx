@@ -44,6 +44,9 @@ class Track extends Component {
 
   playClickHandler(e){
     if(!this.isThisTrackPlaying()){
+      this.props.dispatch({
+        type: STOP_PLAYER
+      });
       //Check if curr track is *not* set to the player. If not ---> SET
         this.props.dispatch({
           type: SET_PLAYER_TRACK_PLAYBACK,
@@ -53,7 +56,12 @@ class Track extends Component {
             id: this.props.data.id
           }
         });
+
+        this.props.dispatch({
+          type: PLAY_PLAYER
+        });
       } 
+      
       else{
         this.props.dispatch({
           type: STOP_PLAYER

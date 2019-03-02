@@ -33,12 +33,11 @@ class Player extends Component {
     //If player is seeking through track - do nothing, cause it can cause infinite loops breakdown
     if(!this.state.isSeeking){
       try{
-        this.props.isPlaying && this.props.currentTrackId ? this.player.audioEl.play() : this.player.audioEl.pause();
+        this.props.isPlaying && this.props.currentTrackId && !this.props.isPaused ? this.player.audioEl.play() : this.player.audioEl.pause();
       } catch(e){
         console.error(e.message);
       }
     }
-    
     
   }
 
@@ -47,7 +46,7 @@ class Player extends Component {
       <>
         <div className="player-info">
           <img
-            src="http://localhost:3030/covers/581164__NOW%20EASY%20FT.%20AIKKO_RIPLOVE.png"
+            src={`${PURE_BACKEND_HOST}covers/581164__NOW%20EASY%20FT.%20AIKKO_RIPLOVE.png`}
             alt=""
             style={{
               width: `105px`,
@@ -61,7 +60,6 @@ class Player extends Component {
         <ReactAudioPlayer
           className="player"
           src={`${this.props.currentTrackPlayback}`}
-          autoPlay
           controls
           ref={element => {
             this.player = element;
@@ -73,7 +71,7 @@ class Player extends Component {
 
   handlePause(){
     //Additional check to avoid infinite loops w/ high requests
-    if(this.props.isPlaying) this.props.dispatch({
+    if(this.props.isPlaying && !this.props.isPaused) this.props.dispatch({
       type: STOP_PLAYER
     })
   }
@@ -92,10 +90,11 @@ class Player extends Component {
     })
   }
 
-  handleEndSeek(){
-    this.setState({
+  async handleEndSeek(){
+    await this.setState({
       isSeeking: false
     })
+    this.handlePlay();
   }
 }
 
@@ -103,7 +102,8 @@ const mapStateToProps = state => ({
   tracks: state.data.tracks,
   currentTrackPlayback: state.player.currentTrackPlayback,
   currentTrackId: state.player.currentTrackId,
-  isPlaying: state.player.isPlaying
+  isPlaying: state.player.isPlaying,
+  isPaused: state.player.isPaused
 });
 
 const mapDispatchToProps = dispatch => {
