@@ -235,6 +235,7 @@ const schema = buildSchema(`
       exec_logout: LogoutResponse!
       exec_get_track_by_id(id: ID!): Track!
       exec_get_own_multiple_tracks: TrackArray!
+      exec_search(query: String!): TrackArray!
     }
 
     type RootMutation{
@@ -390,6 +391,26 @@ async function exec_get_own_multiple_tracks({}, { session }) {
   return { tracks: arr };
 }
 
+async function exec_search({ query }, {session}){
+  let words = query.split(' ');
+  words.map(word => word.trim());
+
+  //Search by friendly file name
+  
+  let out = await Track.findAll({
+    where: {
+      friendly_file_name: {
+        [Op.like]: `%${query}%`
+      }
+    }
+  });
+
+  
+  //TODO: Implement ID3 Search and return both arrays
+
+  return {tracks : (out ? out : [])};
+}
+
 //=========================
 
 let rootGraph = {
@@ -398,7 +419,8 @@ let rootGraph = {
   exec_logout,
   users,
   exec_get_track_by_id,
-  exec_get_own_multiple_tracks
+  exec_get_own_multiple_tracks,
+  exec_search
 };
 
 srv.use(
