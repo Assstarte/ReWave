@@ -151,6 +151,10 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
   }
 });
 
+//===============
+//Multiple files
+//===============
+
 //WHOAMI
 srv.get("/whoami", async (req, res) => {
   res.status(200);
@@ -554,16 +558,6 @@ sequelize.sync();
 //===================================
 //MP3 Tags w/ NodeID3 TEST SECTION
 //===================================
-
-let file =
-  "./assets/test/test.mp3" || new Buffer("Some Buffer of a (mp3) file");
-
-let tags = NodeID3.read(file);
-
-srv.get("/test", (req, res) => {
-  res.status(200);
-  res.end(JSON.stringify(tags));
-});
 
 //===================================
 

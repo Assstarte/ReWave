@@ -46,7 +46,7 @@ class Player extends Component {
       <>
         <div className="player-info">
           <img
-            src={`${PURE_BACKEND_HOST}covers/581164__NOW%20EASY%20FT.%20AIKKO_RIPLOVE.png`}
+            src={`${PURE_BACKEND_HOST}covers/${this.props.currentTrackCover}`}
             alt=""
             style={{
               width: `105px`,
@@ -102,6 +102,7 @@ const mapStateToProps = state => ({
   tracks: state.data.tracks,
   currentTrackPlayback: state.player.currentTrackPlayback,
   currentTrackId: state.player.currentTrackId,
+  currentTrackCover: state.player.currentTrackCover,
   isPlaying: state.player.isPlaying,
   isPaused: state.player.isPaused
 });

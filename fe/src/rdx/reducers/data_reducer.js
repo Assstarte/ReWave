@@ -4,7 +4,8 @@ import {
 
 const initialState = {
   tracks: [],
-  currentTrackPlayback: ""
+  currentTrackPlayback: "",
+  currentTrackCover: ""
 };
 
 export default function(state = initialState, action) {
@@ -20,7 +21,8 @@ export default function(state = initialState, action) {
     case SET_PLAYER_TRACK_PLAYBACK:
       return{
         ...state,
-        currentTrackPlayback: action.payload
+        currentTrackPlayback: action.payload.playback,
+        currentTrackCover: action.payload.cover
       }
 
     default:
