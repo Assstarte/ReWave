@@ -49,13 +49,13 @@ class App extends Component {
               <Switch>
                 <Route
                   path="/"
-                  component={store.getState().auth.loggedIn ? Main : SignIn}
+                  component={this.props.loggedIn ? Main : SignIn}
                   exact
                 />
                 <Route path="/login" component={SignIn} />
                 <Route
                   path="/home"
-                  component={store.getState().auth.loggedIn ? Main : SignIn}
+                  component={this.props.loggedIn ? Main : SignIn}
                 />
                 <Route path="/register" component={SignUp} />
                 <Route path="/upload" component={Upload} />
@@ -76,4 +76,11 @@ store.subscribe(() => {
   localStorage.setItem("reduxAuthState", JSON.stringify(wholeState.auth));
 });
 
-export default App;
+const mapStateToProps = state => ({
+  loggedIn: state.auth.loggedIn
+});
+
+export default connect(
+  mapStateToProps,
+  {}
+)(App);
