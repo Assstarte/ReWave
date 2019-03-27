@@ -8,7 +8,7 @@ class Upload extends Component {
   render() {
     return (
       <React.Fragment>
-        <div className="tc">
+        <div className="tc no-canvas">
           {/* <FileForm/> */}
           <FileInput />
         </div>

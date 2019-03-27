@@ -58,7 +58,7 @@ class Player extends Component {
       <>
         <div className="player-info">
           <img
-            src={`${PURE_BACKEND_HOST}covers/${this.props.currentTrackCover}`}
+            src={`${PURE_BACKEND_HOST}/covers/${this.props.currentTrackCover}`}
             alt=""
             style={{
               width: `105px`,
