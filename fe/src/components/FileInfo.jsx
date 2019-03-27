@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 
 class FileInfo extends Component {
+
+  constructor(props){
+    super(props);
+    this._titleRef = React.createRef();
+    this._albumRef = React.createRef();
+    this._artistRef = React.createRef();
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -86,6 +94,11 @@ class FileInfo extends Component {
         </form>
       </React.Fragment>
     );
+  }
+
+  editTrackTags(e){
+    e.preventDefault();
+    console.log("LOL, This is working!");
   }
 }
 
