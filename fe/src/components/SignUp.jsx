@@ -63,6 +63,7 @@ class SignUp extends Component {
                   name="login"
                   id="login"
                   ref={this._loginRef}
+                  required
                 />
               </div>
               <div className="mv3">
@@ -75,6 +76,7 @@ class SignUp extends Component {
                   name="password"
                   id="password"
                   ref={this._passwordRef}
+                  required
                 />
               </div>
               <div className="mv3">
@@ -99,6 +101,7 @@ class SignUp extends Component {
                   name="email-address"
                   id="email-address"
                   ref={this._emailRef}
+                  required
                 />
               </div>
             </fieldset>
@@ -128,7 +131,7 @@ class SignUp extends Component {
               </div>
             </div>
             <div className="lh-copy mt3">
-              <a href="#0" className="f6 link dim black db">
+              <a href="/login" className="f6 link dim black db">
                 Already have an account? Login >
               </a>
             </div>

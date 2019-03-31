@@ -105,11 +105,8 @@ class SignIn extends Component {
             </div>
 
             <div className="lh-copy mt3">
-              <a href="#0" className="f6 link dim black db">
-                Sign Up
-              </a>
-              <a href="#0" className="f6 link dim black db">
-                Forgot your password?
+              <a href="/register" className="f6 link dim black db">
+                No account yet? Sign Up >
               </a>
             </div>
           </form>
