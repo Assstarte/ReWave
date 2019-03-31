@@ -18,6 +18,7 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Upload from "./components/Upload";
 import Main from "./components/Main";
+import PlaylistsPanel from "./components/PlaylistsPanel";
 
 //==============
 //Fetch Bar
@@ -59,8 +60,9 @@ class App extends Component {
                 />
                 <Route path="/register" component={SignUp} />
                 <Route path="/upload" component={Upload} />
-                <Route path="/dash" component={Main} />
+                <Route path="/dash" component={this.props.loggedIn ? Main : SignIn} />
                 <Route path="/test" component={TrackPanel} />
+                <Route path="/playlists" component={this.props.loggedIn ? PlaylistsPanel : SignIn} />
               </Switch>
             </div>
           </Router>

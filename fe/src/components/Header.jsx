@@ -11,10 +11,15 @@ class Header extends Component {
           <Navbar.Brand href="#home">ReWave</Navbar.Brand>
 
           <Nav className="mr-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#features">Playlists</Nav.Link>
-            <Nav.Link href="#pricing">Tracks</Nav.Link>
+            <Nav.Link href="/">Home</Nav.Link>
+            <Nav.Link href="/playlists">Playlists</Nav.Link>
+            <Nav.Link href="/dash">Tracks</Nav.Link>
           </Nav>
+          <Nav className="ml-auto">
+            <Nav.Link href="/login">Login</Nav.Link>
+            <Nav.Link href="/register">Create Account</Nav.Link>
+          </Nav>
+
           <Form inline>
             <LoginGreeting />
             <FormControl type="text" placeholder="Search" className="mr-sm-2" />

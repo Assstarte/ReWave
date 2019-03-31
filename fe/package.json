@@ -8,6 +8,7 @@
     "react": "^16.8.1",
     "react-audio-player": "^0.11.0",
     "react-bootstrap": "^1.0.0-beta.5",
+    "react-burger-menu": "^2.6.5",
     "react-dom": "^16.8.1",
     "react-fetch-progressbar": "0.0.3",
     "react-redux": "^6.0.0",
