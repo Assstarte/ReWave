@@ -4,7 +4,7 @@ import DashboardItem from "./DashboardItem";
 class Dashboard extends Component {
   constructor(props) {
     super(props);
-    this.menuItems = ["Tracks", "Playlists", "Upload", "Browse"];
+    this.menuItems = ["Dash", "Playlists", "Upload", "Browse"];
   }
 
   render() {
@@ -14,7 +14,7 @@ class Dashboard extends Component {
 
         <ul id="menu-items" className="">
           {this.menuItems.map(item => (
-            <DashboardItem text={item} link="/upload" />
+            <DashboardItem text={item} link={`/${item.toLowerCase()}`} />
           ))}
         </ul>
 

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
 import { LOGOUT_REQUEST } from "../../rdx/actions/types";
 import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const LoginGreeting = props => (
   <div
@@ -31,7 +32,7 @@ const LoginGreeting = props => (
       id={`dropdown-button-drop-right`}
       key={"drdwn-rght"}
     >
-      <Dropdown.Item eventKey="1"><a href="/profile">Profile</a></Dropdown.Item>
+      <Dropdown.Item eventKey="1"><Link to="/profile">Profile</Link></Dropdown.Item>
       {/* <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
     <Dropdown.Item eventKey="3">Something else here</Dropdown.Item> */}
       <Dropdown.Divider />

@@ -4,7 +4,6 @@ import Footer from "./Footer";
 import Dashboard from "./Dashboard";
 import TrackPanel from "./TrackPanel";
 import Player from "./Player";
-import TrackDisplaySelection from "./panels/TrackDisplaySelection";
 
 import { Container, Row, Col } from "react-bootstrap";
 
@@ -19,7 +18,7 @@ class Main extends Component {
               <Dashboard />
             </Col>
             <Col xs={10}>
-              {/* <TrackDisplaySelection /> */}
+              
               <TrackPanel />
             </Col>
           </Row>

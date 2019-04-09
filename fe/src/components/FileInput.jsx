@@ -27,7 +27,6 @@ class FileInput extends Component {
   render() {
     return (
       <React.Fragment>
-        <Header />
         <div className="tc">
           <AlertErrorDismissable
             type="danger"
