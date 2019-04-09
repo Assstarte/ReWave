@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Dropzone from "./Dropzone";
+import MyDropzone from "./MyDropzone";
 import { Container, Row, Col } from "react-bootstrap";
 import Dashboard from "./Dashboard";
 import Header from "./Header";
@@ -16,7 +17,7 @@ const UploadMultiple = (props) => {
                             <Dashboard />
                         </Col>
                         <Col xs={10}>
-                            <Dropzone />
+                            <MyDropzone />
                         </Col>
                     </Row>
                 </Container>

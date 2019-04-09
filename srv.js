@@ -91,25 +91,37 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
 //===============
 //Multiple files
 //===============
-srv.post("/upload/multiple", upload.array("tracks"), async (req, res, next) => {
+srv.post("/upload/multiple", upload.any(), async (req, res, next) => {
   if (!req.session.auth) {
     res.status(400);
-    res.end(JSON.stringify({ error: "Not authenticated" }));
+    res.end(JSON.stringify({ error: "Not authenticated" }))
+  } else {
+    //Retreiving the actual session object
+    let session_auth_data = JSON.parse(req.session.auth);
+    //Extracting User from DB
+    let uploader = await User.findByPk(session_auth_data.id);
+
+    // if (!uploader) throw new Error("Not Authenticated!");
+    console.dir(uploader);
+    // req.files is the array of files
+    // req.body will hold the text fields, if there were any
+
+    let results = [];
+
+    console.dir(req)
+
+    for (let item of req.files) {
+      let result = await handleSingleTrackInUploadQuery(item, req.body, uploader);
+      results.push(result)
+    }
+
+    return res.json(results);
+
   }
 
-  //Retreiving the actual session object
-  let session_auth_data = JSON.parse(req.session.auth);
-  //Extracting User from DB
-  let uploader = await User.findByPk(session_auth_data.id);
+}
 
-  if (!uploader) throw new Error("Not Authenticated!");
-  // req.files is the array of files
-  // req.body will hold the text fields, if there were any
-
-  console.dir(req.files);
-  return res.json({sosi: "XUY"})
-
-})
+)
 
 //WHOAMI
 srv.get("/whoami", async (req, res) => {
@@ -577,9 +589,9 @@ async function handleSingleTrackInUploadQuery(file, body, uploader) {
       avg_rating: 0,
       file_name: file.filename,
       //Note: Cut off the .mp3 part from the name
-      friendly_file_name: body.friendly_name.substr(
+      friendly_file_name: file.originalname.substr(
         0,
-        body.friendly_name.indexOf(".mp3")
+        file.originalname.indexOf(".mp3")
       ),
       cover_name: coverFileName || "nocover.jpg"
     });
@@ -599,9 +611,9 @@ async function handleSingleTrackInUploadQuery(file, body, uploader) {
       avg_rating: 0,
       file_name: file.filename,
       //Note: Cut off the .mp3 part from the name
-      friendly_file_name: body.friendly_name.substr(
+      friendly_file_name: file.originalname.substr(
         0,
-        body.friendly_name.indexOf(".mp3")
+        file.originalname.indexOf(".mp3")
       ),
       cover_name: coverFileName || "nocover.jpg"
     });
