@@ -31,10 +31,9 @@ class TrackPanel extends Component {
             heading="Looks like there is no content!"
             message="Why not upload a few tracks to begin with?"
             btnText="Sure! >"
-            redirect
             path="/upload"
             display={this.props.tracks.length === 0}
-            history={this.props.history}
+            
           />
 
 
