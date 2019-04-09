@@ -27,6 +27,9 @@ import { progressBarFetch, setOriginalFetch } from "react-fetch-progressbar";
 import { WHOAMI_REQUEST } from "./rdx/actions/types";
 import TrackPanel from "./components/TrackPanel";
 import Profile from "./components/pages/Profile";
+import UploadTypeSelection from "./components/pages/UploadTypeSelection";
+import Dropzone from "./components/Dropzone";
+import UploadMultiple from "./components/UploadMultiple";
 
 // Let react-fetch-progressbar know what the original fetch is.
 setOriginalFetch(window.fetch);
@@ -61,7 +64,9 @@ class App extends Component {
                 />
                 <Route path="/register" component={SignUp} />
                 <Route path="/profile" component={this.props.loggedIn ? Profile : SignIn} />
-                <Route path="/upload" component={Upload} />
+                <Route exact path="/upload" component={UploadTypeSelection}/>
+                <Route exact path="/upload/single" component={Upload}/>
+                <Route exact path="/upload/multi" component={UploadMultiple}/>
                 <Route path="/dash" component={this.props.loggedIn ? Main : SignIn} />
                 <Route path="/test" component={TrackPanel} />
                 <Route path="/playlists" component={this.props.loggedIn ? PlaylistsPanel : SignIn} />

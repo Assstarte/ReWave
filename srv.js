@@ -58,102 +58,58 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
   let uploader = await User.findByPk(session_auth_data.id);
 
   if (!uploader) throw new Error("Not Authenticated!");
-  // req.file is the file
-  // req.body will hold the text fields, if there were any
-  let tags = NodeID3.read(req.file.path);
-  console.log(`======> PUT FILE Request Received`);
-  console.dir(req.file);
-  console.log(`======> TAGS:`);
-  console.dir(tags);
-  //DELETING the RAW part to avoid conflicts
-  delete tags.raw;
-  if (tags.encodingTechnology) delete tags.encodingTechnology;
-  console.dir(`======> Tags W/O RAW`);
-  console.dir(tags);
-  let coverFileName = null;
 
-  //CASE WHEN WE HAVE ACTUAL TAGS
+  let result = await handleSingleTrackInUploadQuery(req.file, req.body, uploader);
 
-  if (tags && !isEmpty(tags)) {
-    // GET cover image Uint8 arr from tags
-
-    //We are trying to obtain & save cover image from mp3 meta if such exists
-    try {
-      let ui8a = tags.image.imageBuffer;
-      coverFileName = `${getRandomIntInclusive(1, 1000000)}__${tags.artist}_${
-        tags.title
-      }.${tags.image.mime}`;
-      fs.writeFile(COVERS_REL_PATH + coverFileName, new Buffer(ui8a), err => {
-        if (err) throw err;
-        console.log("The file has been saved!");
-      });
-    } catch (e) {
-      console.error(e.message);
-    }
-
-    let track = await Track.create({
-      type: req.body.publication ? "PUBLICATION" : "UPLOAD",
-      public: req.body.private ? false : true,
-      description: req.body.description ? req.body.description : "N/A",
-      avg_rating: 0,
-      file_name: req.file.filename,
-      //Note: Cut off the .mp3 part from the name
-      friendly_file_name: req.body.friendly_name.substr(
-        0,
-        req.body.friendly_name.indexOf(".mp3")
-      ),
-      cover_name: coverFileName || "nocover.jpg"
-    });
-
-    await uploader.addTrack([track]);
-
-    await deployTrackTagsToDb(track.dataValues.id, tags);
-
+  if (result.hasTags && result.uploaded) {
     res.status(201);
     res.end(
       JSON.stringify({
         hasTags: true,
-        name: track.friendly_file_name,
+        name: result.track.friendly_file_name,
         cover: track.cover_name,
         tags
       })
     );
   }
 
-  //IF THERE ARE NO TAGS AT ALL --->
-  else {
-    console.log("SESS");
-    console.dir(req.session);
-    let track = await Track.create({
-      type: req.body.publication ? "PUBLICATION" : "UPLOAD",
-      public: req.body.private ? false : true,
-      description: req.body.description ? req.body.description : "N/A",
-      avg_rating: 0,
-      file_name: req.file.filename,
-      //Note: Cut off the .mp3 part from the name
-      friendly_file_name: req.body.friendly_name.substr(
-        0,
-        req.body.friendly_name.indexOf(".mp3")
-      ),
-      cover_name: coverFileName || "nocover.jpg"
-    });
 
-    await uploader.addTrack([track]);
-
+  if (!result.hasTags && result.uploaded) {
     res.status(201);
 
     res.end(
       JSON.stringify({
         hasTags: false,
-        name: track.friendly_file_name
+        name: result.track.friendly_file_name
       })
     );
   }
 });
 
+
+
 //===============
 //Multiple files
 //===============
+srv.post("/upload/multiple", upload.array("tracks"), async (req, res, next) => {
+  if (!req.session.auth) {
+    res.status(400);
+    res.end(JSON.stringify({ error: "Not authenticated" }));
+  }
+
+  //Retreiving the actual session object
+  let session_auth_data = JSON.parse(req.session.auth);
+  //Extracting User from DB
+  let uploader = await User.findByPk(session_auth_data.id);
+
+  if (!uploader) throw new Error("Not Authenticated!");
+  // req.files is the array of files
+  // req.body will hold the text fields, if there were any
+
+  console.dir(req.files);
+  return res.json({sosi: "XUY"})
+
+})
 
 //WHOAMI
 srv.get("/whoami", async (req, res) => {
@@ -308,13 +264,13 @@ async function exec_signup(args) {
   } else return { done: false };
 }
 
-async function users({}, { session }) {
+async function users({ }, { session }) {
   console.log(session);
   let response = await User.findAll();
   console.dir(response);
 }
 
-async function exec_logout({}, { session }) {
+async function exec_logout({ }, { session }) {
   if (session.auth) {
     // delete session object
     console.log("======SESSION EXISTS. ERASING!==========");
@@ -336,40 +292,40 @@ async function exec_get_track_by_id({ id }, { session }) {
 
   return tags
     ? {
-        id: track.id,
-        public: track.public,
-        title: track.title, //custom Sequelize getter
-        artist: track.artist, //custom Sequelize getter
-        avg_rating: track.avg_rating,
-        file_name: track.file_name,
-        friendly_file_name: track.friendly_file_name,
-        cover_name: track.cover_name,
-        owner_id: track.userId,
-        tagCollection: {
-          title: tags.title,
-          artist: tags.artist,
-          album: tags.album,
-          year: tags.year,
-          composer: tags.composer,
-          imageType: tags.imageType
-        }
+      id: track.id,
+      public: track.public,
+      title: track.title, //custom Sequelize getter
+      artist: track.artist, //custom Sequelize getter
+      avg_rating: track.avg_rating,
+      file_name: track.file_name,
+      friendly_file_name: track.friendly_file_name,
+      cover_name: track.cover_name,
+      owner_id: track.userId,
+      tagCollection: {
+        title: tags.title,
+        artist: tags.artist,
+        album: tags.album,
+        year: tags.year,
+        composer: tags.composer,
+        imageType: tags.imageType
       }
+    }
     : {
-        id: track.id,
-        public: track.public,
-        title: track.title, //custom Sequelize getter
-        artist: track.artist, //custom Sequelize getter
-        avg_rating: track.avg_rating,
-        file_name: track.file_name,
-        friendly_file_name: track.friendly_file_name,
-        cover_name: track.cover_name,
-        owner_id: track.userId
-      };
+      id: track.id,
+      public: track.public,
+      title: track.title, //custom Sequelize getter
+      artist: track.artist, //custom Sequelize getter
+      avg_rating: track.avg_rating,
+      file_name: track.file_name,
+      friendly_file_name: track.friendly_file_name,
+      cover_name: track.cover_name,
+      owner_id: track.userId
+    };
 }
 
-async function exec_get_own_multiple_tracks({}, { session }) {
+async function exec_get_own_multiple_tracks({ }, { session }) {
   let userId = session.auth ? JSON.parse(session.auth).id : null;
-  if(!userId) throw new Error("Not Authenticated!");
+  if (!userId) throw new Error("Not Authenticated!");
 
   //let auth_sess = JSON.parse(session.auth);
 
@@ -395,12 +351,12 @@ async function exec_get_own_multiple_tracks({}, { session }) {
   return { tracks: arr };
 }
 
-async function exec_search({ query }, {session}){
+async function exec_search({ query }, { session }) {
   let words = query.split(' ');
   words.map(word => word.trim());
 
   //Search by friendly file name
-  
+
   let out = await Track.findAll({
     where: {
       friendly_file_name: {
@@ -409,10 +365,10 @@ async function exec_search({ query }, {session}){
     }
   });
 
-  
+
   //TODO: Implement ID3 Search and return both arrays
 
-  return {tracks : (out ? out : [])};
+  return { tracks: (out ? out : []) };
 }
 
 //=========================
@@ -503,30 +459,30 @@ const Track = sequelize.define("tracks", {
     defaultValue: "nocover.jpg"
   }
 },
-{
-  getterMethods: {
-    async tags() {
-      let instance = await this.getTag_collection();
-      return instance ? instance.dataValues : null;
+  {
+    getterMethods: {
+      async tags() {
+        let instance = await this.getTag_collection();
+        return instance ? instance.dataValues : null;
+      },
+
+      async title() {
+        let name = await this.dataValues.friendly_file_name;
+        return name.substr(name.indexOf("-") + 1, name.length);
+      },
+
+      async artist() {
+        let name = await this.dataValues.friendly_file_name;
+        return name.substr(0, name.indexOf("-"));
+      }
     },
 
-    async title(){
-      let name = await this.dataValues.friendly_file_name;
-      return name.substr(name.indexOf("-") + 1, name.length);
-    },
-
-    async artist(){
-      let name = await this.dataValues.friendly_file_name;
-      return name.substr(0, name.indexOf("-"));
-    }
-  },
-  
-  setterMethods: {
-    async tags(tagsObj) {
-      await deployTrackTagsToDb(this.id, tagsObj);
+    setterMethods: {
+      async tags(tagsObj) {
+        await deployTrackTagsToDb(this.id, tagsObj);
+      }
     }
   }
-}
 );
 
 const TagCollection = sequelize.define("tag_collections", {
@@ -578,6 +534,89 @@ function isEmpty(obj) {
   return true;
 }
 
+async function handleSingleTrackInUploadQuery(file, body, uploader) {
+  let tags = NodeID3.read(file.path);
+  console.log(`======> PUT FILE Request Received`);
+  console.dir(file);
+  console.log(`======> TAGS:`);
+  console.dir(tags);
+  //DELETING the RAW part to avoid conflicts
+  delete tags.raw;
+  if (tags.encodingTechnology) delete tags.encodingTechnology;
+  console.dir(`======> Tags W/O RAW`);
+  console.dir(tags);
+  let coverFileName = null;
+
+  //CASE WHEN WE HAVE ACTUAL TAGS
+  let result = {
+    hasTags: false,
+    uploaded: false
+  }
+  if (tags && !isEmpty(tags)) {
+    result.hasTags = true;
+    // GET cover image Uint8 arr from tags
+
+    //We are trying to obtain & save cover image from mp3 meta if such exists
+    try {
+      let ui8a = tags.image.imageBuffer;
+      coverFileName = `${getRandomIntInclusive(1, 1000000)}__${tags.artist}_${
+        tags.title
+        }.${tags.image.mime}`;
+      fs.writeFile(COVERS_REL_PATH + coverFileName, new Buffer(ui8a), err => {
+        if (err) throw err;
+        console.log("The file has been saved!");
+      });
+    } catch (e) {
+      console.error(e.message);
+    }
+
+    let track = await Track.create({
+      type: body.publication ? "PUBLICATION" : "UPLOAD",
+      public: body.private ? false : true,
+      description: body.description ? body.description : "N/A",
+      avg_rating: 0,
+      file_name: file.filename,
+      //Note: Cut off the .mp3 part from the name
+      friendly_file_name: body.friendly_name.substr(
+        0,
+        body.friendly_name.indexOf(".mp3")
+      ),
+      cover_name: coverFileName || "nocover.jpg"
+    });
+
+    await uploader.addTrack([track]);
+
+    let deployed = await deployTrackTagsToDb(track.dataValues.id, tags);
+
+    if (deployed) result.uploaded = true;
+    return result;
+  } else {
+    result.hasTags = false;
+    let track = await Track.create({
+      type: body.publication ? "PUBLICATION" : "UPLOAD",
+      public: body.private ? false : true,
+      description: body.description ? body.description : "N/A",
+      avg_rating: 0,
+      file_name: file.filename,
+      //Note: Cut off the .mp3 part from the name
+      friendly_file_name: body.friendly_name.substr(
+        0,
+        body.friendly_name.indexOf(".mp3")
+      ),
+      cover_name: coverFileName || "nocover.jpg"
+    });
+
+    await uploader.addTrack([track]);
+
+    if (track) {
+      result.uploaded = true;
+      result.track = track;
+    }
+
+    return result;
+  }
+}
+
 async function deployTrackTagsToDb(track_id, tags) {
   let track = await Track.findOne({
     where: {
@@ -594,9 +633,11 @@ async function deployTrackTagsToDb(track_id, tags) {
     imageType: tags.image ? tags.image.mime : null
   });
 
-  console.dir(track.__proto__);
   let createdEntity = await tag_collection.setTrack(track);
+
+  return createdEntity ? true : false;
 }
+
 
 srv.listen("3030", () => {
   console.log("Backend API is on port 3030");
