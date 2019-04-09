@@ -31,7 +31,7 @@ const LoginGreeting = props => (
       id={`dropdown-button-drop-right`}
       key={"drdwn-rght"}
     >
-      <Dropdown.Item eventKey="1">Profile</Dropdown.Item>
+      <Dropdown.Item eventKey="1"><a href="/profile">Profile</a></Dropdown.Item>
       {/* <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
     <Dropdown.Item eventKey="3">Something else here</Dropdown.Item> */}
       <Dropdown.Divider />

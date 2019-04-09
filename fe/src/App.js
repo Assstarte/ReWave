@@ -7,7 +7,7 @@ import React, { Component } from "react";
 import { Provider } from "react-redux";
 import { connect } from "react-redux";
 import { Router, Route, Link, Switch } from "react-router-dom";
-import createHistory from "history/createBrowserHistory";
+import { BrowserRouter } from 'react-router-dom';
 import store from "./rdx/store";
 
 //==============
@@ -26,6 +26,7 @@ import PlaylistsPanel from "./components/PlaylistsPanel";
 import { progressBarFetch, setOriginalFetch } from "react-fetch-progressbar";
 import { WHOAMI_REQUEST } from "./rdx/actions/types";
 import TrackPanel from "./components/TrackPanel";
+import Profile from "./components/pages/Profile";
 
 // Let react-fetch-progressbar know what the original fetch is.
 setOriginalFetch(window.fetch);
@@ -45,7 +46,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div id="app">
-          <Router history={createHistory()}>
+          <BrowserRouter>
             <div>
               <Switch>
                 <Route
@@ -59,13 +60,14 @@ class App extends Component {
                   component={this.props.loggedIn ? Main : SignIn}
                 />
                 <Route path="/register" component={SignUp} />
+                <Route path="/profile" component={this.props.loggedIn ? Profile : SignIn} />
                 <Route path="/upload" component={Upload} />
                 <Route path="/dash" component={this.props.loggedIn ? Main : SignIn} />
                 <Route path="/test" component={TrackPanel} />
                 <Route path="/playlists" component={this.props.loggedIn ? PlaylistsPanel : SignIn} />
               </Switch>
             </div>
-          </Router>
+          </BrowserRouter>
         </div>
       </Provider>
     );
