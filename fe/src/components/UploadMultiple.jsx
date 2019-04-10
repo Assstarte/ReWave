@@ -7,6 +7,7 @@ import Dashboard from "./Dashboard";
 import Header from "./Header";
 
 const UploadMultiple = (props) => {
+    const test = () => console.error("THISIS WORK");
     return (
         <React.Fragment>
             <div className="tc">
@@ -17,7 +18,7 @@ const UploadMultiple = (props) => {
                             <Dashboard />
                         </Col>
                         <Col xs={10}>
-                            <MyDropzone />
+                            <MyDropzone test={test} />
                         </Col>
                     </Row>
                 </Container>

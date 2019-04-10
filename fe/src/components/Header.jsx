@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { Nav, Navbar, Form, FormControl, Button } from "react-bootstrap";
 import LoginGreeting from "./view/LoginGreeting";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
 class Header extends Component {
   render() {
@@ -12,9 +13,24 @@ class Header extends Component {
           <Navbar.Brand href="#home">ReWave</Navbar.Brand>
 
           <Nav className="mr-auto">
-            <Nav.Link href="/">Home</Nav.Link>
-            <Nav.Link href="/playlists">Playlists</Nav.Link>
-            <Nav.Link href="/dash">Tracks</Nav.Link>
+
+            <Nav.Link>
+              <Link to="/">
+                Home
+                </Link>
+            </Nav.Link>
+
+            <Nav.Link>
+              <Link to="/dash">Tracks
+              </Link>
+            </Nav.Link>
+
+            <Nav.Link>
+              <Link to="/playlists">
+                Playlists
+              </Link>
+            </Nav.Link>
+
           </Nav>
           {this.props.loggedIn
             ?
