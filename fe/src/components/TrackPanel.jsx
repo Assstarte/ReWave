@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import ReactAudioPlayer from "react-audio-player";
 import Track from "./Track";
 import { REQUEST_ALL_UPLOADED_TRACKS } from "../rdx/actions/types";
+import { Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import AlertSuccessForwardTo from "./bootstrap/AlertSuccessForwardTo";
 
@@ -26,15 +28,15 @@ class TrackPanel extends Component {
             ))}
           </div>
           :
-          <AlertSuccessForwardTo
-            type="warning"
-            heading="Looks like there is no content!"
-            message="Why not upload a few tracks to begin with?"
-            btnText="Sure! >"
-            path="/upload"
-            display={this.props.tracks.length === 0}
-            
-          />
+          <div className="tc">
+            <Alert dismissible variant="dark">
+              <Alert.Heading>No tracks were found ;(</Alert.Heading>
+              <p>
+                Why not <Link to="/upload"><strong>UPLOAD</strong></Link> some?
+            </p>
+            </Alert>
+          </div>
+
 
 
         }

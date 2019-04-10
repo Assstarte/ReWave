@@ -3,6 +3,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import { connect } from "react-redux";
 import AlertErrorDismissable from "./bootstrap/AlertErrorDismissable";
+import { Link } from "react-router-dom";
 
 //========
 //Actions
@@ -131,9 +132,12 @@ class SignUp extends Component {
               </div>
             </div>
             <div className="lh-copy mt3">
-              <a href="/login" className="f6 link dim black db">
-                Already have an account? Login >
-              </a>
+              <Link to="/login">
+                <span className="f6 link dim black db">
+                  Already have an account? Login >
+              </span>
+              </Link>
+
             </div>
           </form>
         </main>

@@ -3,7 +3,8 @@ import {
   SIGNUP_REQUEST,
   WHOAMI,
   PRELOAD_INFO_INIT,
-  PRELOAD_FILE_INFO_W_NAME
+  PRELOAD_FILE_INFO_W_NAME,
+  INIT_SEARCH
 } from "./types";
 
 export const AC_SIGNUP = ({ un, pw, em, fn }) => ({
@@ -41,3 +42,10 @@ export const AC_PRELOAD_FILE_INFO = (tags, cover_path, renderName) => {
       }
     };
 };
+
+export const AC_INIT_SEARCH = ({ query }) => ({
+  type: INIT_SEARCH,
+  payload: {
+    query
+  }
+});

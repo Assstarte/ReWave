@@ -28,7 +28,6 @@ import { WHOAMI_REQUEST } from "./rdx/actions/types";
 import TrackPanel from "./components/TrackPanel";
 import Profile from "./components/pages/Profile";
 import UploadTypeSelection from "./components/pages/UploadTypeSelection";
-import Dropzone from "./components/Dropzone";
 import UploadMultiple from "./components/UploadMultiple";
 
 // Let react-fetch-progressbar know what the original fetch is.

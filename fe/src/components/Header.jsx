@@ -4,8 +4,15 @@ import { Nav, Navbar, Form, FormControl, Button } from "react-bootstrap";
 import LoginGreeting from "./view/LoginGreeting";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { AC_INIT_SEARCH } from "../rdx/actions"
 
 class Header extends Component {
+
+  constructor(props) {
+    super(props);
+    this.searchRef = React.createRef();
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -37,17 +44,39 @@ class Header extends Component {
             <div></div>
             :
             <Nav className="ml-auto">
-              <Nav.Link href="/login">Login</Nav.Link>
-              <Nav.Link href="/register">Create Account</Nav.Link>
+              <Nav.Link>
+                <Link to="/login">
+                  <span className="f6 link dim black db" style={{color: "#fff"}}>
+                    Login
+                  </span>
+                </Link>
+
+              </Nav.Link>
+              <Nav.Link>
+                <Link to="/register">
+                  <span className="f6 link dim black db cw" style={{color: "#fff"}}>
+                    Create Account
+                  </span>
+                </Link>
+              </Nav.Link>
             </Nav>}
 
-          <Form inline>
+          <Form inline onSubmit={(e) => this.onSearch(e)}>
             <LoginGreeting />
-            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-            <Button variant="outline-info">Search</Button>
+            <FormControl type="text" placeholder="Search" className="mr-sm-2" ref={this.searchRef} />
+            <Button type="submit" variant="outline-info">Search</Button>
           </Form>
         </Navbar>
       </React.Fragment>
+    );
+  }
+
+  onSearch(e) {
+    e.preventDefault();
+    this.props.dispatch(
+      this.props.AC_INIT_SEARCH({
+        query: this.searchRef.current.value
+      })
     );
   }
 }
@@ -58,8 +87,15 @@ const mapStateToProps = state => ({
   user_name: state.auth.user_name
 });
 
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch,
+    AC_INIT_SEARCH
+  };
+};
+
 
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
 )(Header);

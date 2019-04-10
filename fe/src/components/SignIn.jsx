@@ -4,6 +4,7 @@ import Header from "./Header";
 import { connect } from "react-redux";
 import AlertSuccessForwardTo from "./bootstrap/AlertSuccessForwardTo";
 import AlertErrorDismissable from "./bootstrap/AlertErrorDismissable";
+import { Link } from "react-router-dom";
 
 //========
 //Actions
@@ -105,13 +106,15 @@ class SignIn extends Component {
             </div>
 
             <div className="lh-copy mt3">
-              <a href="/register" className="f6 link dim black db">
-                No account yet? Sign Up >
-              </a>
+              <Link to="/register">
+                <span className="f6 link dim black db">
+                  No account yet? Sign Up >
+              </span>
+              </Link>
             </div>
           </form>
         </main>
-        
+
       </div>
     );
   }
