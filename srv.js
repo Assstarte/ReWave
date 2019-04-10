@@ -66,7 +66,7 @@ srv.put("/upload", upload.single("track"), async (req, res, next) => {
     res.end(
       JSON.stringify({
         hasTags: true,
-        name: result.track.friendly_file_name,
+        name: "name",
         cover: track.cover_name,
         tags
       })
